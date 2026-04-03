@@ -1,1 +1,155 @@
-/home/user/caju-limao-pulse/index.html
+
+// ================================================================
+// GOOGLE APPS SCRIPT — Boteco Caju Limao
+// Pesquisa Pulso — Receptor de respostas
+//
+// COMO USAR:
+// 1. Acesse script.google.com e crie um novo projeto
+// 2. Cole todo este codigo no editor
+// 3. Clique em "Implantar" > "Nova implantacao"
+// 4. Tipo: "App da Web"
+// 5. Executar como: "Eu"
+// 6. Quem pode acessar: "Qualquer pessoa"
+// 7. Copie a URL gerada e cole no arquivo HTML (campo SCRIPT_URL)
+// ================================================================
+
+const SHEET_NAME_SEG = 'Segunda-feira';
+const SHEET_NAME_SEX = 'Sexta-feira';
+const SPREADSHEET_ID  = ''; // deixe vazio para usar a planilha atual
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SPREADSHEET_ID
+      ? SpreadsheetApp.openById(SPREADSHEET_ID)
+      : SpreadsheetApp.getActiveSpreadsheet();
+
+    const sheetName = data.tipo === 'seg' ? SHEET_NAME_SEG : SHEET_NAME_SEX;
+    let sheet = ss.getSheetByName(sheetName);
+
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+      const headers = data.tipo === 'seg'
+        ? ['Data', 'Horario', 'Chegada (1-5)', 'Disposicao (1-5)', 'Engajamento (1-5)', 'Media', 'Comentario']
+        : ['Data', 'Horario', 'Comida (1-5)', 'Lideranca (1-5)', 'Empresa (1-5)', 'Media', 'Comentario'];
+      sheet.appendRow(headers);
+      sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+      sheet.setFrozenRows(1);
+    }
+
+    const now = new Date();
+    const horario = Utilities.formatDate(now, Session.getScriptTimeZone(), 'HH:mm');
+
+    let row, media;
+
+    if (data.tipo === 'seg') {
+      const vals = [data.chegada, data.disposicao, data.engajamento].filter(Number);
+      media = vals.length ? (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1) : '';
+      row = [
+        data.data || Utilities.formatDate(now, Session.getScriptTimeZone(), 'dd/MM/yyyy'),
+        horario,
+        data.chegada || '',
+        data.disposicao || '',
+        data.engajamento || '',
+        media,
+        data.obs || ''
+      ];
+    } else {
+      const vals = [data.comida, data.lideranca, data.empresa].filter(Number);
+      media = vals.length ? (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1) : '';
+      row = [
+        data.data || Utilities.formatDate(now, Session.getScriptTimeZone(), 'dd/MM/yyyy'),
+        horario,
+        data.comida || '',
+        data.lideranca || '',
+        data.empresa || '',
+        media,
+        data.obs || ''
+      ];
+    }
+
+    sheet.appendRow(row);
+
+    verificarAlertas(sheet, sheetName, row, data);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: 'error', message: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function verificarAlertas(sheet, sheetName, row, data) {
+  // Calcula media das ultimas 5 respostas por dimensao e envia email se critico
+  const EMAIL_ALERTA = 'SEU_EMAIL_AQUI@gmail.com'; // substitua pelo seu email
+
+  const lastRows = sheet.getLastRow();
+  if (lastRows < 3) return; // aguarda ao menos 2 respostas reais alem do header
+
+  const dimensoes = data.tipo === 'seg'
+    ? [{ nome: 'Chegada', col: 3 }, { nome: 'Disposicao', col: 4 }, { nome: 'Engajamento', col: 5 }]
+    : [{ nome: 'Comida', col: 3 }, { nome: 'Lideranca', col: 4 }, { nome: 'Empresa', col: 5 }];
+
+  const alertas = [];
+
+  dimensoes.forEach(dim => {
+    const numRows = Math.min(5, lastRows - 1);
+    const range = sheet.getRange(lastRows - numRows + 1, dim.col, numRows, 1).getValues();
+    const vals = range.map(r => parseFloat(r[0])).filter(v => !isNaN(v));
+    if (!vals.length) return;
+    const media = vals.reduce((a,b) => a+b, 0) / vals.length;
+    if (media < 2.5) {
+      alertas.push({ dim: dim.nome, media: media.toFixed(1), nivel: 'CRITICO' });
+    } else if (media < 3.2) {
+      alertas.push({ dim: dim.nome, media: media.toFixed(1), nivel: 'ATENCAO' });
+    }
+  });
+
+  if (!alertas.length) return;
+
+  const linhasAlerta = alertas.map(a =>
+    `- ${a.nivel}: ${a.dim} com media ${a.media}/5 (ultimas respostas)`
+  ).join('\n');
+
+  const assunto = alertas.some(a => a.nivel === 'CRITICO')
+    ? '[CAJU LIMAO] Alerta critico na pesquisa pulso'
+    : '[CAJU LIMAO] Atencao: dimensao abaixo do ideal';
+
+  const corpo = `Ola,
+
+A pesquisa pulso do Boteco Caju Limao identificou os seguintes pontos:
+
+${linhasAlerta}
+
+Pesquisa: ${sheetName}
+Data: ${data.data}
+
+Acesse a planilha para mais detalhes.
+
+---
+Este e um aviso automatico da pesquisa pulso do Caju Limao.`;
+
+  MailApp.sendEmail(EMAIL_ALERTA, assunto, corpo);
+}
+
+// Funcao auxiliar — rode manualmente para testar o recebimento
+function testarScript() {
+  const fakeEvent = {
+    postData: {
+      contents: JSON.stringify({
+        tipo: 'seg',
+        chegada: 3,
+        disposicao: 2,
+        engajamento: 4,
+        obs: 'Teste de funcionamento',
+        data: '30/06/2025'
+      })
+    }
+  };
+  const resultado = doPost(fakeEvent);
+  Logger.log(resultado.getContent());
+}
