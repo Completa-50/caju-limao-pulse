@@ -1,155 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisa — Boteco Caju Limao</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; min-height: 100vh; padding: 1.25rem 1rem 2rem; }
+  .app { max-width: 420px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .brand { font-size: 11px; font-weight: 600; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .day-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px; margin-bottom: 8px; }
+  .badge-seg { background: #dbeafe; color: #1e40af; }
+  .badge-sex { background: #fee2d5; color: #9a3412; }
+  .header h1 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+  .header .sub { font-size: 13px; color: #aaa; }
+  .progress { height: 3px; background: #e5e5e5; border-radius: 2px; margin: 1rem 0; }
+  .progress-fill { height: 100%; background: #555; border-radius: 2px; transition: width 0.3s; }
+  .anon { text-align: center; font-size: 12px; color: #bbb; margin-bottom: 1.1rem; }
+  .card { background: #fff; border: 1px solid #ebebeb; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 10px; }
+  .qlabel { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+  .qdesc { font-size: 12px; color: #bbb; margin-bottom: 10px; }
+  .scale { display: flex; justify-content: space-between; gap: 6px; }
+  .ebtn { flex: 1; padding: 10px 2px; font-size: 24px; border: 1px solid #ebebeb; border-radius: 10px; background: #fafafa; cursor: pointer; text-align: center; line-height: 1; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+  .ebtn:active { transform: scale(0.93); }
+  .ebtn.sel { border-color: #555; background: #fff; box-shadow: 0 0 0 2px #ddd; }
+  .comment { background: #fff; border: 1px solid #ebebeb; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 14px; }
+  .comment label { font-size: 13px; color: #888; display: block; margin-bottom: 6px; }
+  .comment textarea { width: 100%; height: 64px; font-size: 13px; font-family: inherit; background: #fafafa; border: 1px solid #ebebeb; border-radius: 8px; padding: 8px 10px; color: #1a1a1a; resize: none; line-height: 1.5; outline: none; }
+  .comment textarea:focus { border-color: #bbb; }
+  .submit-btn { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; background: #1a1a1a; border: none; border-radius: 14px; color: #fff; cursor: pointer; transition: opacity 0.15s; }
+  .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .submit-btn:not(:disabled):active { opacity: 0.8; }
+  .loading { text-align: center; padding: 1rem; font-size: 13px; color: #aaa; display: none; }
+  .done { text-align: center; padding: 3rem 1rem; display: none; }
+  .done .big { font-size: 52px; margin-bottom: 14px; }
+  .done h2 { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+  .done p { font-size: 14px; color: #888; }
+  .error-msg { background: #fff0f0; border: 1px solid #ffc5c5; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #c0392b; margin-bottom: 10px; display: none; }
+  .wrong-day { text-align: center; padding: 3rem 1rem; }
+  .wrong-day .big { font-size: 48px; margin-bottom: 14px; }
+  .wrong-day h2 { font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+  .wrong-day p { font-size: 13px; color: #888; }
+</style>
+</head>
+<body>
+<div class="app">
 
-// ================================================================
-// GOOGLE APPS SCRIPT — Boteco Caju Limao
-// Pesquisa Pulso — Receptor de respostas
-//
-// COMO USAR:
-// 1. Acesse script.google.com e crie um novo projeto
-// 2. Cole todo este codigo no editor
-// 3. Clique em "Implantar" > "Nova implantacao"
-// 4. Tipo: "App da Web"
-// 5. Executar como: "Eu"
-// 6. Quem pode acessar: "Qualquer pessoa"
-// 7. Copie a URL gerada e cole no arquivo HTML (campo SCRIPT_URL)
-// ================================================================
+  <div id="wrong-day" class="wrong-day" style="display:none">
+    <div class="big">📅</div>
+    <h2>A pesquisa não está disponível hoje</h2>
+    <p>A pesquisa é enviada toda segunda-feira e sexta-feira.<br>Volte no próximo dia disponível.</p>
+  </div>
 
-const SHEET_NAME_SEG = 'Segunda-feira';
-const SHEET_NAME_SEX = 'Sexta-feira';
-const SPREADSHEET_ID  = ''; // deixe vazio para usar a planilha atual
+  <div id="survey-seg" style="display:none">
+    <div class="header">
+      <div class="brand">Boteco Caju Limao</div>
+      <div class="day-badge badge-seg">Segunda-feira</div>
+      <h1>Como você está chegando hoje?</h1>
+      <div class="sub" id="dt-seg"></div>
+    </div>
+    <div class="progress"><div class="progress-fill" id="prog-seg" style="width:0%"></div></div>
+    <div class="anon">Resposta anônima — seja honesto</div>
+    <div class="card">
+      <div class="qlabel">Como você chegou hoje?</div>
+      <div class="qdesc">Seu estado antes de começar o turno</div>
+      <div class="scale" data-q="chegada" data-s="seg">
+        <button class="ebtn" data-v="1">😩</button>
+        <button class="ebtn" data-v="2">😕</button>
+        <button class="ebtn" data-v="3">😐</button>
+        <button class="ebtn" data-v="4">🙂</button>
+        <button class="ebtn" data-v="5">💪</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="qlabel">Sua disposição para a semana</div>
+      <div class="qdesc">Energia física e mental</div>
+      <div class="scale" data-q="disposicao" data-s="seg">
+        <button class="ebtn" data-v="1">🪫</button>
+        <button class="ebtn" data-v="2">😮‍💨</button>
+        <button class="ebtn" data-v="3">😶</button>
+        <button class="ebtn" data-v="4">⚡</button>
+        <button class="ebtn" data-v="5">🔥</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="qlabel">Vontade de dar o seu melhor hoje</div>
+      <div class="qdesc">Engajamento com o trabalho</div>
+      <div class="scale" data-q="engajamento" data-s="seg">
+        <button class="ebtn" data-v="1">😴</button>
+        <button class="ebtn" data-v="2">😑</button>
+        <button class="ebtn" data-v="3">🤷</button>
+        <button class="ebtn" data-v="4">😊</button>
+        <button class="ebtn" data-v="5">🏆</button>
+      </div>
+    </div>
+    <div class="comment">
+      <label>Quer adicionar algo? (opcional)</label>
+      <textarea id="obs-seg" placeholder="Não precisa se identificar..."></textarea>
+    </div>
+    <div class="error-msg" id="err-seg">Erro ao enviar. Verifique sua conexão e tente novamente.</div>
+    <div class="loading" id="load-seg">Enviando...</div>
+    <button class="submit-btn" id="btn-seg" disabled onclick="submitSurvey('seg')">Enviar</button>
+  </div>
 
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const ss = SPREADSHEET_ID
-      ? SpreadsheetApp.openById(SPREADSHEET_ID)
-      : SpreadsheetApp.getActiveSpreadsheet();
+  <div id="survey-sex" style="display:none">
+    <div class="header">
+      <div class="brand">Boteco Caju Limao</div>
+      <div class="day-badge badge-sex">Sexta-feira</div>
+      <h1>Como foi a semana para você?</h1>
+      <div class="sub" id="dt-sex"></div>
+    </div>
+    <div class="progress"><div class="progress-fill" id="prog-sex" style="width:0%"></div></div>
+    <div class="anon">Resposta anônima — seja honesto</div>
+    <div class="card">
+      <div class="qlabel">Satisfação com a refeição do staff</div>
+      <div class="qdesc">Qualidade e variedade da comida essa semana</div>
+      <div class="scale" data-q="comida" data-s="sex">
+        <button class="ebtn" data-v="1">🤢</button>
+        <button class="ebtn" data-v="2">😬</button>
+        <button class="ebtn" data-v="3">🙂</button>
+        <button class="ebtn" data-v="4">😋</button>
+        <button class="ebtn" data-v="5">🤤</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="qlabel">Como você avalia a liderança essa semana?</div>
+      <div class="qdesc">Suporte, comunicação e reconhecimento</div>
+      <div class="scale" data-q="lideranca" data-s="sex">
+        <button class="ebtn" data-v="1">😡</button>
+        <button class="ebtn" data-v="2">😒</button>
+        <button class="ebtn" data-v="3">😐</button>
+        <button class="ebtn" data-v="4">😌</button>
+        <button class="ebtn" data-v="5">🤩</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="qlabel">Como você se sente em trabalhar aqui?</div>
+      <div class="qdesc">Satisfação geral com a empresa</div>
+      <div class="scale" data-q="empresa" data-s="sex">
+        <button class="ebtn" data-v="1">😔</button>
+        <button class="ebtn" data-v="2">😒</button>
+        <button class="ebtn" data-v="3">😐</button>
+        <button class="ebtn" data-v="4">😊</button>
+        <button class="ebtn" data-v="5">🥰</button>
+      </div>
+    </div>
+    <div class="comment">
+      <label>O que poderia ter sido melhor essa semana? (opcional)</label>
+      <textarea id="obs-sex" placeholder="Crítica ou sugestão — tudo é bem-vindo..."></textarea>
+    </div>
+    <div class="error-msg" id="err-sex">Erro ao enviar. Verifique sua conexão e tente novamente.</div>
+    <div class="loading" id="load-sex">Enviando...</div>
+    <button class="submit-btn" id="btn-sex" disabled onclick="submitSurvey('sex')">Enviar</button>
+  </div>
 
-    const sheetName = data.tipo === 'seg' ? SHEET_NAME_SEG : SHEET_NAME_SEX;
-    let sheet = ss.getSheetByName(sheetName);
+  <div class="done" id="done">
+    <div class="big" id="done-emoji">✅</div>
+    <h2 id="done-title">Obrigado pela resposta</h2>
+    <p id="done-msg">Sua opinião contribui para melhorar o ambiente de trabalho.</p>
+  </div>
 
-    if (!sheet) {
-      sheet = ss.insertSheet(sheetName);
-      const headers = data.tipo === 'seg'
-        ? ['Data', 'Horario', 'Chegada (1-5)', 'Disposicao (1-5)', 'Engajamento (1-5)', 'Media', 'Comentario']
-        : ['Data', 'Horario', 'Comida (1-5)', 'Lideranca (1-5)', 'Empresa (1-5)', 'Media', 'Comentario'];
-      sheet.appendRow(headers);
-      sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
-      sheet.setFrozenRows(1);
-    }
+</div>
 
-    const now = new Date();
-    const horario = Utilities.formatDate(now, Session.getScriptTimeZone(), 'HH:mm');
+<script>
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzzwL0CTRMQi_3QKwxrNtdVX0GsB63yFyyzDrDIyJswBohMQ7FRFKPUkJ-Re0fFDS5/exec';
+  const ans = { seg: {}, sex: {} };
 
-    let row, media;
-
-    if (data.tipo === 'seg') {
-      const vals = [data.chegada, data.disposicao, data.engajamento].filter(Number);
-      media = vals.length ? (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1) : '';
-      row = [
-        data.data || Utilities.formatDate(now, Session.getScriptTimeZone(), 'dd/MM/yyyy'),
-        horario,
-        data.chegada || '',
-        data.disposicao || '',
-        data.engajamento || '',
-        media,
-        data.obs || ''
-      ];
+  function init() {
+    const params = new URLSearchParams(window.location.search);
+    const preview = params.get('preview');
+    const realDay = new Date().getDay();
+    const day = preview === 'seg' ? 1 : preview === 'sex' ? 5 : realDay;
+    const isSeg = day === 1;
+    const isSex = day === 5;
+    const dateStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (isSeg) {
+      document.getElementById('dt-seg').textContent = dateStr;
+      document.getElementById('survey-seg').style.display = 'block';
+    } else if (isSex) {
+      document.getElementById('dt-sex').textContent = dateStr;
+      document.getElementById('survey-sex').style.display = 'block';
     } else {
-      const vals = [data.comida, data.lideranca, data.empresa].filter(Number);
-      media = vals.length ? (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1) : '';
-      row = [
-        data.data || Utilities.formatDate(now, Session.getScriptTimeZone(), 'dd/MM/yyyy'),
-        horario,
-        data.comida || '',
-        data.lideranca || '',
-        data.empresa || '',
-        media,
-        data.obs || ''
-      ];
+      document.getElementById('wrong-day').style.display = 'block';
     }
-
-    sheet.appendRow(row);
-
-    verificarAlertas(sheet, sheetName, row, data);
-
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'ok' }))
-      .setMimeType(ContentService.MimeType.JSON);
-
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: 'error', message: err.message }))
-      .setMimeType(ContentService.MimeType.JSON);
   }
-}
 
-function verificarAlertas(sheet, sheetName, row, data) {
-  // Calcula media das ultimas 5 respostas por dimensao e envia email se critico
-  const EMAIL_ALERTA = 'SEU_EMAIL_AQUI@gmail.com'; // substitua pelo seu email
-
-  const lastRows = sheet.getLastRow();
-  if (lastRows < 3) return; // aguarda ao menos 2 respostas reais alem do header
-
-  const dimensoes = data.tipo === 'seg'
-    ? [{ nome: 'Chegada', col: 3 }, { nome: 'Disposicao', col: 4 }, { nome: 'Engajamento', col: 5 }]
-    : [{ nome: 'Comida', col: 3 }, { nome: 'Lideranca', col: 4 }, { nome: 'Empresa', col: 5 }];
-
-  const alertas = [];
-
-  dimensoes.forEach(dim => {
-    const numRows = Math.min(5, lastRows - 1);
-    const range = sheet.getRange(lastRows - numRows + 1, dim.col, numRows, 1).getValues();
-    const vals = range.map(r => parseFloat(r[0])).filter(v => !isNaN(v));
-    if (!vals.length) return;
-    const media = vals.reduce((a,b) => a+b, 0) / vals.length;
-    if (media < 2.5) {
-      alertas.push({ dim: dim.nome, media: media.toFixed(1), nivel: 'CRITICO' });
-    } else if (media < 3.2) {
-      alertas.push({ dim: dim.nome, media: media.toFixed(1), nivel: 'ATENCAO' });
-    }
+  document.querySelectorAll('.scale').forEach(scale => {
+    const survey = scale.dataset.s;
+    scale.querySelectorAll('.ebtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        scale.querySelectorAll('.ebtn').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        ans[survey][scale.dataset.q] = +btn.dataset.v;
+        const filled = Object.keys(ans[survey]).length;
+        document.getElementById('prog-' + survey).style.width = (filled / 3 * 100) + '%';
+        document.getElementById('btn-' + survey).disabled = filled < 3;
+      });
+    });
   });
 
-  if (!alertas.length) return;
+  function submitSurvey(s) {
+    const btn = document.getElementById('btn-' + s);
+    const load = document.getElementById('load-' + s);
+    const err = document.getElementById('err-' + s);
+    btn.disabled = true;
+    load.style.display = 'block';
+    err.style.display = 'none';
+    const payload = {
+      ...ans[s],
+      tipo: s,
+      obs: document.getElementById('obs-' + s).value.trim(),
+      ts: new Date().toISOString(),
+      data: new Date().toLocaleDateString('pt-BR')
+    };
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      document.getElementById('survey-' + s).style.display = 'none';
+      const doneEl = document.getElementById('done');
+      if (s === 'seg') {
+        document.getElementById('done-emoji').textContent = '✅';
+        document.getElementById('done-title').textContent = 'Obrigado pela resposta';
+        document.getElementById('done-msg').textContent = 'Sua opinião contribui para melhorar o ambiente de trabalho.';
+      } else {
+        document.getElementById('done-emoji').textContent = '✅';
+        document.getElementById('done-title').textContent = 'Obrigado pela resposta';
+        document.getElementById('done-msg').textContent = 'Bom descanso. Até segunda.';
+      }
+      doneEl.style.display = 'block';
+    })
+    .catch(() => {
+      load.style.display = 'none';
+      err.style.display = 'block';
+      btn.disabled = false;
+    });
+  }
 
-  const linhasAlerta = alertas.map(a =>
-    `- ${a.nivel}: ${a.dim} com media ${a.media}/5 (ultimas respostas)`
-  ).join('\n');
-
-  const assunto = alertas.some(a => a.nivel === 'CRITICO')
-    ? '[CAJU LIMAO] Alerta critico na pesquisa pulso'
-    : '[CAJU LIMAO] Atencao: dimensao abaixo do ideal';
-
-  const corpo = `Ola,
-
-A pesquisa pulso do Boteco Caju Limao identificou os seguintes pontos:
-
-${linhasAlerta}
-
-Pesquisa: ${sheetName}
-Data: ${data.data}
-
-Acesse a planilha para mais detalhes.
-
----
-Este e um aviso automatico da pesquisa pulso do Caju Limao.`;
-
-  MailApp.sendEmail(EMAIL_ALERTA, assunto, corpo);
-}
-
-// Funcao auxiliar — rode manualmente para testar o recebimento
-function testarScript() {
-  const fakeEvent = {
-    postData: {
-      contents: JSON.stringify({
-        tipo: 'seg',
-        chegada: 3,
-        disposicao: 2,
-        engajamento: 4,
-        obs: 'Teste de funcionamento',
-        data: '30/06/2025'
-      })
-    }
-  };
-  const resultado = doPost(fakeEvent);
-  Logger.log(resultado.getContent());
-}
+  init();
+</script>
+</body>
+</html>
