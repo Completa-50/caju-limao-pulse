@@ -181,21 +181,11 @@ async function carregar() {
 
     try {
       // Aba 1 = gid 0 (geralmente segunda-feira se criada primeiro)
-      const raw0 = await fetchSheet(0);
-      const raw1 = await fetchSheet(1206353071);
-
-      // Detecta qual aba é qual pelo header
-      if (raw0.length && raw0[0]['Chegada (1-5)'] !== undefined) {
-        dadosSeg = raw0; dadosSex = raw1;
-      } else if (raw0.length && raw0[0]['Comida (1-5)'] !== undefined) {
-        dadosSex = raw0; dadosSeg = raw1;
-      } else {
-        dadosSeg = raw0; dadosSex = raw1;
-      }
+      dadosSeg = await fetchSheet(837536532);
+      dadosSex = await fetchSheet(1206353071);
     } catch(e) {
-      // Tenta gids alternativos
-      dadosSeg = await fetchSheet(0);
-      dadosSex = await fetchSheet(1);
+      dadosSeg = await fetchSheet(837536532);
+      dadosSex = await fetchSheet(1206353071);
     }
 
     renderDashboard(dadosSeg, dadosSex);
