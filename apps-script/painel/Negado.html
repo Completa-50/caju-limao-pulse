@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulso · acesso negado</title>
+<?!= incluirEstilo_() ?>
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="brand">CAJU LIMÃO <span>· PULSO</span></div></div></header>
+<main>
+  <div class="login card" id="negado">
+    <h1>Acesso negado</h1>
+    <p class="sub">Este painel é restrito à coordenação da pesquisa.</p>
+    <p class="muted">Você está conectado como <b><?= email || 'conta não identificada' ?></b>. Se precisa de acesso, fale com a coordenação da pesquisa.</p>
+    <p class="muted"><a href="https://accounts.google.com/AccountChooser" target="_top" rel="noopener">Entrar com outra conta Google</a></p>
+  </div>
+</main>
+</body>
+</html>

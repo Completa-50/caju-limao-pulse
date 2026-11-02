@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pulso · Painel interno</title>
+<?!= incluirEstilo_() ?>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand">CAJU LIMÃO <span>· PULSO</span></div>
+</div></header>
+
+<main>
+<section id="s-int" class="screen on">
+ <div id="saiu" class="login card" style="display:none">
+   <h1>Você saiu do painel</h1>
+   <p class="sub">Os dados foram apagados desta aba. Para entrar de novo, recarregue a página.</p>
+   <p class="muted">Se este aparelho é compartilhado, saia também da conta Google:
+     <a href="https://accounts.google.com/Logout" target="_top" rel="noopener">sair da conta Google</a>.</p>
+ </div>
+
+ <div id="intApp">
+  <div class="row" style="justify-content:space-between;margin-bottom:6px">
+    <div><h1>Painel interno</h1><p class="sub" style="margin:0">Conectado como <b id="quem"><?= email ?></b> · perfil: moderador</p></div>
+    <button class="btn sm" id="logout" type="button">Sair</button>
+  </div>
+  <div class="tabs" id="itabs">
+    <button type="button" data-p="p-visao" class="on">Visão geral</button>
+    <button type="button" data-p="p-fila">Fila de moderação <span class="chip c-or" id="qcount">0</span></button>
+    <button type="button" data-p="p-acoes">Ações</button>
+    <button type="button" data-p="p-com">Comunicados</button>
+    <button type="button" data-p="p-hist">Histórico v2</button>
+  </div>
+
+  <div id="p-visao" class="pane on">
+    <div class="row" style="margin-bottom:12px">
+      <span class="muted">Janela:</span>
+      <select id="win" style="width:auto"><option value="4">Últimas 4 semanas</option><option value="8">Últimas 8 semanas</option></select>
+      <span class="muted">Área:</span>
+      <select id="fArea" style="width:auto"><option>Todas</option><option>Front</option><option>Back</option><option>CPD</option></select>
+      <button class="btn sm" id="recarregar" type="button">Atualizar dados</button>
+      <span class="muted" id="nInfo"></span>
+    </div>
+    <div class="grid g3" id="kpis"></div>
+    <div class="card">
+      <h2>Volume de respostas por semana</h2>
+      <div id="vol"></div>
+      <p class="muted">Contagem de envios, não de pessoas. Adesão só com o número de pessoas escaladas em cada semana.</p>
+    </div>
+    <p class="muted">Cada pergunta é lida sozinha: o painel não soma as 5 perguntas numa média geral, não compara perguntas diferentes entre si e não usa semáforo. Resultados com menos de <span id="nminTxt">5</span> respostas aparecem como "Dados insuficientes", inclusive por área.</p>
+  </div>
+
+  <div id="p-fila" class="pane">
+    <div class="row" style="margin-bottom:10px">
+      <span class="muted">Mostrar:</span>
+      <select id="qf" style="width:auto"><option value="novo">Novos</option><option value="todos">Todos</option></select>
+    </div>
+    <div id="queue"></div>
+    <div class="card"><h3>Registro de decisões</h3><div class="log" id="log"></div></div>
+  </div>
+
+  <div id="p-acoes" class="pane">
+    <div class="grid g2">
+      <div class="card">
+        <h2>Registrar ação</h2>
+        <label class="f" for="aTema">Tema</label>
+        <select id="aTema"><option>Refeição do staff</option><option>Escala e intervalos</option><option>Liderança e comunicação</option><option>Estrutura e manutenção</option><option>Pagamentos e benefícios</option><option>Outro</option></select>
+        <label class="f" for="aOuv">O que ouvimos (agregado, sem nomes)</label><div class="muted" id="aBase"></div>
+        <input type="text" id="aOuv" maxlength="300" placeholder="Ex.: vários relatos de escala divulgada tarde">
+        <label class="f" for="aAcao">O que vamos fazer / fizemos</label>
+        <input type="text" id="aAcao" maxlength="300" placeholder="Ex.: escala publicada toda quinta até 18h">
+        <div class="grid g2" style="gap:10px">
+          <div><label class="f" for="aResp">Responsável (cargo)</label><input type="text" id="aResp" maxlength="80" placeholder="Ex.: Gerência de Front"></div>
+          <div><label class="f" for="aPrazo">Prazo</label><input type="text" id="aPrazo" maxlength="40" placeholder="Ex.: 30/11"></div>
+        </div>
+        <label class="f" for="aStatus">Status</label>
+        <select id="aStatus"><option value="and">Em andamento</option><option value="feito">Feito</option><option value="nao">Não vamos fazer (com motivo)</option></select>
+        <div style="margin-top:12px"><button class="btn pri" id="addAcao" type="button">Publicar no Mural</button></div>
+        <div class="err" id="aerr"></div>
+      </div>
+      <div class="card"><h2>Ações publicadas</h2><div id="acList"></div></div>
+    </div>
+  </div>
+
+  <div id="p-com" class="pane">
+    <div class="grid g2">
+      <div class="card">
+        <h2>Comunicado da liderança</h2>
+        <label class="f" for="cTit">Título</label><input type="text" id="cTit" maxlength="120" placeholder="Ex.: Nova regra de intervalos">
+        <label class="f" for="cMsg">Mensagem</label><textarea id="cMsg" maxlength="1500" placeholder="Escreva para a equipe toda"></textarea>
+        <label class="f" for="cAss">Assinatura</label><input type="text" id="cAss" maxlength="80" value="Liderança CJ AN">
+        <div style="margin-top:12px"><button class="btn pri" id="addCom" type="button">Publicar no Mural</button></div>
+        <div class="err" id="cerr"></div>
+      </div>
+      <div class="card"><h2>Publicados</h2><div id="comList"></div></div>
+    </div>
+  </div>
+
+  <div id="p-hist" class="pane">
+    <div class="card">
+      <h2>Série histórica (versão 2)</h2>
+      <p class="muted">Médias por bimestre calculadas das notas das abas antigas (colunas C a E), sem usar a coluna Media. Entre parênteses, o número de respostas. Comida e Empresa continuam comparáveis na v3; as perguntas de segunda e Liderança mudam de texto, então a série é cortada.</p>
+      <div class="tbl-wrap"><table><thead><tr id="histHead"></tr></thead><tbody id="hist"></tbody></table></div>
+    </div>
+  </div>
+ </div>
+</section>
+</main>
+
+<div class="modal" id="pubModal" role="dialog" aria-modal="true" aria-labelledby="pubTitulo"><div class="box">
+  <h2 id="pubTitulo">Publicar no Mural</h2>
+  <p class="muted">Edite antes de publicar: tire nomes, apelidos, horários exatos e detalhes que identifiquem alguém. O texto original nunca é publicado.</p>
+  <select id="pubTipo" style="margin-bottom:8px"><option value="elogio">Elogio</option><option value="pond">Ponderação</option><option value="sug">Sugestão</option></select>
+  <textarea id="pubTxt" maxlength="600" style="min-height:110px"></textarea>
+  <div class="err" id="perr"></div>
+  <div class="row" style="justify-content:flex-end">
+    <button class="btn" id="pubCancel" type="button">Cancelar</button>
+    <button class="btn pri" id="pubOk" type="button">Publicar</button>
+  </div>
+</div></div>
+
+<script>
+(function(){
+"use strict";
+/* Todo texto vindo de dados entra no DOM via textContent (função el). */
+function el(tag,attrs,kids){var e=document.createElement(tag);if(attrs)for(var k in attrs){if(k==="class")e.className=attrs[k];else if(k==="text")e.textContent=attrs[k];else e.setAttribute(k,attrs[k]);}(kids||[]).forEach(function(c){if(c==null)return;e.appendChild(typeof c==="string"?document.createTextNode(c):c);});return e;}
+function $(id){return document.getElementById(id);}
+function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+function dm(ymd){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(ymd||"");return m?m[3]+"/"+m[2]:"";}
+function num(v,c){return v.toFixed(c).replace(".",",");}
+
+/* google.script.run como Promise */
+function srv(fn){var args=Array.prototype.slice.call(arguments,1);return new Promise(function(ok,falha){var r=google.script.run.withSuccessHandler(ok).withFailureHandler(function(e){falha(e&&e.message?e:new Error(String(e)));});r[fn].apply(r,args);});}
+function erroPadrao(e){return (e&&e.message)||"Falha de comunicação com o servidor.";}
+
+var ativo=true;
+Array.prototype.forEach.call($("itabs").children,function(b){b.onclick=function(){Array.prototype.forEach.call($("itabs").children,function(x){x.classList.toggle("on",x===b);});Array.prototype.forEach.call(document.querySelectorAll(".pane"),function(p){p.classList.toggle("on",p.id===b.dataset.p);});if(b.dataset.p==="p-hist")carregarHist();};});
+
+$("logout").onclick=function(){ativo=false;["kpis","vol","queue","log","acList","comList","hist","histHead"].forEach(function(i){clear($(i));});$("quem").textContent="";$("intApp").style.display="none";$("saiu").style.display="block";};
+
+/* ---------- Visão geral ---------- */
+var COLORS=["#b3372a","#e39a7a","#d9d4cc","#f1b27a","#e8731a"];
+$("win").onchange=carregarVisao;$("fArea").onchange=carregarVisao;
+$("recarregar").onclick=function(){carregarVisao();carregarFila();carregarListas();};
+function carregarVisao(){
+  $("nInfo").textContent="carregando…";
+  srv("painelVisao",+$("win").value,$("fArea").value).then(function(r){if(!ativo)return;if(!r.ok){$("nInfo").textContent=r.erro;return;}renderVisao(r);}).catch(function(e){$("nInfo").textContent=erroPadrao(e);});
+}
+function renderVisao(r){
+  $("nminTxt").textContent=String(r.nmin);
+  $("nInfo").textContent="n = "+r.n+" respostas";
+  var k=$("kpis");clear(k);
+  r.dimensoes.forEach(function(s){var card=el("div",{class:"card kpi"});
+    card.appendChild(el("div",{class:"muted",text:s.rotulo}));
+    if(!s.suficiente){card.appendChild(el("div",{class:"v",text:"—"}));card.appendChild(el("div",{class:"n",text:"Dados insuficientes (n < "+r.nmin+")"}));}
+    else{card.appendChild(el("div",{class:"v",text:num(s.media,2)}));
+      var d=el("div",{class:"dist"});s.distribuicao.forEach(function(x,i){var b=el("i");b.style.width=(x/s.n*100)+"%";b.style.background=COLORS[i];b.title="nota "+(i+1)+": "+x;d.appendChild(b);});card.appendChild(d);
+      card.appendChild(el("div",{class:"legend"},[el("span",{text:Math.round(s.p12)+"% notas 1–2"}),el("span",{text:Math.round(s.p45)+"% notas 4–5"})]));
+      card.appendChild(el("div",{class:"n",text:"n = "+s.n}));}
+    k.appendChild(card);});
+  var v=$("vol");clear(v);var tb=el("table");var max=0;r.volume.forEach(function(p){max=Math.max(max,p.n);});
+  r.volume.slice().reverse().forEach(function(p,i,arr){var idx=arr.length-1-i;var bar=el("div",{class:"bar"});bar.style.width=(max?p.n/max*100:0)+"%";tb.appendChild(el("tr",{},[el("td",{text:idx===0?"Semana atual":"Há "+idx+" sem."}),el("td",{style:"width:60%"},[bar]),el("td",{text:String(p.n)})]));});
+  v.appendChild(tb);
+}
+
+/* ---------- Fila ---------- */
+var TIPO={elogio:["Elogio","c-ok"],melhora:["Melhoria","c-warn"],sugestao:["Sugestão","c-info"]};
+var STL={novo:["Novo","c-or"],publicado:["Publicado (editado)","c-ok"],rh:["Encaminhado ao RH","c-bad"],arquivado:["Arquivado","c-gray"]};
+$("qf").onchange=carregarFila;
+function carregarFila(){
+  srv("painelFila",$("qf").value).then(function(r){if(!ativo)return;if(!r.ok){mostrarErroFila(r.erro);return;}renderFila(r);}).catch(function(e){mostrarErroFila(erroPadrao(e));});
+}
+function mostrarErroFila(m){var b=$("queue");clear(b);b.appendChild(el("p",{class:"err",text:m}));}
+function renderFila(r){
+  $("qcount").textContent=String(r.novos);
+  var box=$("queue");clear(box);
+  if(!r.itens.length)box.appendChild(el("p",{class:"empty",text:"Nada pendente."}));
+  r.itens.forEach(function(x){
+    var it=el("div",{class:"qitem"});
+    var flags=[];if(x.flagOfensa)flags.push("Linguagem ofensiva");if(x.flagNome)flags.push("Pode citar pessoa");
+    var tp=TIPO[x.tipo]||[x.tipo,"c-gray"],st=STL[x.status]||[x.status,"c-gray"];
+    it.appendChild(el("div",{class:"row"},[el("span",{class:"chip "+tp[1],text:tp[0]}),el("span",{class:"chip "+st[1],text:st[0]}),x.teste?el("span",{class:"chip c-test",text:"Teste"}):null,el("span",{class:"muted",text:"recebido "+dm(x.data)}),flags.length?el("span",{class:"flag",text:"⚑ "+flags.join(" · ")}):null]));
+    it.appendChild(el("div",{class:"txt",text:x.texto}));
+    if(x.status==="novo"){
+      var bp=el("button",{class:"btn sm pri",type:"button",text:"Editar e publicar"});bp.onclick=function(){openPub(x);};
+      var br=el("button",{class:"btn sm",type:"button",text:"Encaminhar ao RH"});br.onclick=function(){decidir(br,"painelEncaminharRH",x.id);};
+      var ba=el("button",{class:"btn sm",type:"button",text:"Arquivar"});ba.onclick=function(){decidir(ba,"painelArquivar",x.id);};
+      var row=el("div",{class:"row"},[bp,br,ba]);
+      if(x.tipo==="melhora"){var bt=el("button",{class:"btn sm",type:"button",text:"Virar ação"});bt.onclick=function(){bt.disabled=true;srv("painelVirarAcao",x.id).then(function(r){if(!r.ok){alert(r.erro);bt.disabled=false;return;}document.querySelector('[data-p="p-acoes"]').click();$("aOuv").value="";aRef=r.ref;$("aBase").textContent="Base: item "+r.ref+" da fila. Descreva o tema com suas palavras; o texto original não vai para o Mural.";$("aOuv").focus();carregarFila();}).catch(function(e){alert(erroPadrao(e));bt.disabled=false;});};row.appendChild(bt);}
+      it.appendChild(row);
+    }
+    box.appendChild(it);
+  });
+  var lg=$("log");clear(lg);if(!r.log.length)lg.appendChild(el("div",{text:"Sem registros ainda."}));
+  r.log.forEach(function(s){lg.appendChild(el("div",{text:s.quando+" · "+s.quem+" · "+s.detalhe+(s.item?" · item "+s.item:"")}));});
+}
+function decidir(btn,fn,id){btn.disabled=true;srv(fn,id).then(function(r){if(!r.ok)alert(r.erro);carregarFila();}).catch(function(e){alert(erroPadrao(e));btn.disabled=false;});}
+
+var pubItem=null,confirmaNome=false;
+function openPub(x){pubItem=x;confirmaNome=false;$("pubTxt").value=x.texto;$("pubTipo").value=x.tipo==="sugestao"?"sug":(x.tipo==="melhora"?"pond":"elogio");$("perr").textContent="";$("pubModal").classList.add("on");$("pubTxt").focus();}
+$("pubCancel").onclick=function(){$("pubModal").classList.remove("on");};
+$("pubTxt").oninput=function(){confirmaNome=false;};
+$("pubOk").onclick=function(){
+  var t=$("pubTxt").value.trim();if(!t){$("perr").textContent="Texto vazio.";return;}
+  $("pubOk").disabled=true;
+  srv("painelPublicar",pubItem.id,$("pubTipo").value,t,confirmaNome).then(function(r){
+    $("pubOk").disabled=false;
+    if(!r.ok){$("perr").textContent=r.erro;if(r.pedeConfirmacao)confirmaNome=true;return;}
+    $("pubModal").classList.remove("on");carregarFila();
+  }).catch(function(e){$("pubOk").disabled=false;$("perr").textContent=erroPadrao(e);});
+};
+
+/* ---------- Ações ---------- */
+var aRef="";
+var ST={and:["Em andamento","c-warn"],feito:["Feito","c-ok"],nao:["Não vamos fazer","c-gray"]};
+$("addAcao").onclick=function(){
+  var o={tema:$("aTema").value,ouvimos:$("aOuv").value,acao:$("aAcao").value,responsavel:$("aResp").value,prazo:$("aPrazo").value,status:$("aStatus").value,ref:aRef};
+  $("addAcao").disabled=true;
+  srv("painelCriarAcao",o).then(function(r){$("addAcao").disabled=false;if(!r.ok){$("aerr").textContent=r.erro;return;}$("aerr").textContent="";$("aBase").textContent="";aRef="";["aOuv","aAcao","aResp","aPrazo"].forEach(function(i){$(i).value="";});carregarListas();carregarFila();}).catch(function(e){$("addAcao").disabled=false;$("aerr").textContent=erroPadrao(e);});
+};
+function acaoNode(a){
+  var st=ST[a.status]||[a.status,"c-gray"];
+  var n=el("div",{class:"act "+a.status});
+  n.appendChild(el("div",{class:"row"},[el("span",{class:"chip c-or",text:a.tema}),el("span",{class:"chip "+st[1],text:st[0]})]));
+  n.appendChild(el("div",{class:"muted",style:"margin-top:6px",text:"O que ouvimos: "+a.ouvimos}));
+  n.appendChild(el("div",{style:"font-weight:600;margin:2px 0",text:a.acao}));
+  n.appendChild(el("div",{class:"muted",text:"Responsável: "+a.responsavel+(a.prazo?" · prazo: "+a.prazo:"")+" · publicado "+dm(a.publicado_em)}));
+  var sel=el("select",{style:"width:auto;margin-top:6px","aria-label":"Alterar status"});Object.keys(ST).forEach(function(k){var op=el("option",{value:k,text:ST[k][0]});if(k===a.status)op.selected=true;sel.appendChild(op);});
+  sel.onchange=function(){sel.disabled=true;srv("painelStatusAcao",a.id,sel.value).then(function(r){if(!r.ok)alert(r.erro);carregarListas();carregarFila();}).catch(function(e){alert(erroPadrao(e));carregarListas();});};
+  n.appendChild(sel);return n;
+}
+function carregarListas(){
+  srv("painelListas").then(function(r){if(!ativo||!r.ok)return;var b=$("acList");clear(b);if(!r.acoes.length)b.appendChild(el("p",{class:"empty",text:"Nenhuma ação publicada ainda."}));r.acoes.forEach(function(a){b.appendChild(acaoNode(a));});
+    var c=$("comList");clear(c);if(!r.comunicados.length)c.appendChild(el("p",{class:"empty",text:"Nenhum comunicado ainda."}));r.comunicados.forEach(function(x){c.appendChild(el("div",{class:"quote"},[el("div",{style:"font-weight:600",text:x.titulo}),el("div",{text:x.mensagem,style:"white-space:pre-wrap;margin:4px 0"}),el("div",{class:"muted",text:"— "+x.assinatura+" · "+dm(x.publicado_em)})]));});
+  }).catch(function(){});
+}
+
+/* ---------- Comunicados ---------- */
+$("addCom").onclick=function(){
+  var o={titulo:$("cTit").value,mensagem:$("cMsg").value,assinatura:$("cAss").value};
+  $("addCom").disabled=true;
+  srv("painelCriarComunicado",o).then(function(r){$("addCom").disabled=false;if(!r.ok){$("cerr").textContent=r.erro;return;}$("cerr").textContent="";$("cTit").value="";$("cMsg").value="";carregarListas();carregarFila();}).catch(function(e){$("addCom").disabled=false;$("cerr").textContent=erroPadrao(e);});
+};
+
+/* ---------- Histórico v2 ---------- */
+var histCarregado=false;
+function carregarHist(){
+  if(histCarregado)return;
+  srv("painelHistorico").then(function(r){if(!ativo)return;if(!r.ok){$("hist").appendChild(el("tr",{},[el("td",{text:r.erro})]));return;}histCarregado=true;
+    var h=$("histHead");clear(h);["Dimensão"].concat(r.periodos).concat(["Na v3"]).forEach(function(t){h.appendChild(el("th",{text:t}));});
+    var b=$("hist");clear(b);r.linhas.forEach(function(l){b.appendChild(el("tr",{},[l.dimensao].concat(l.valores).concat([l.v3]).map(function(c){return el("td",{text:c});})));});
+  }).catch(function(e){var b=$("hist");clear(b);b.appendChild(el("tr",{},[el("td",{text:erroPadrao(e)})]));});
+}
+
+carregarVisao();carregarFila();carregarListas();
+})();
+</script>
+</body>
+</html>

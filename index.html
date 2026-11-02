@@ -1,247 +1,143 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pesquisa — Boteco Caju Limao</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; min-height: 100vh; padding: 1.25rem 1rem 2rem; }
-  .app { max-width: 420px; margin: 0 auto; }
-  .header { text-align: center; margin-bottom: 1.5rem; }
-  .brand { font-size: 11px; font-weight: 600; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
-  .day-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 12px; border-radius: 20px; margin-bottom: 8px; }
-  .badge-seg { background: #dbeafe; color: #1e40af; }
-  .badge-sex { background: #fee2d5; color: #9a3412; }
-  .header h1 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
-  .header .sub { font-size: 13px; color: #aaa; }
-  .progress { height: 3px; background: #e5e5e5; border-radius: 2px; margin: 1rem 0; }
-  .progress-fill { height: 100%; background: #555; border-radius: 2px; transition: width 0.3s; }
-  .anon { text-align: center; font-size: 12px; color: #bbb; margin-bottom: 1.1rem; }
-  .card { background: #fff; border: 1px solid #ebebeb; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 10px; }
-  .qlabel { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
-  .qdesc { font-size: 12px; color: #bbb; margin-bottom: 10px; }
-  .scale { display: flex; justify-content: space-between; gap: 6px; }
-  .ebtn { flex: 1; padding: 10px 2px; font-size: 24px; border: 1px solid #ebebeb; border-radius: 10px; background: #fafafa; cursor: pointer; text-align: center; line-height: 1; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
-  .ebtn:active { transform: scale(0.93); }
-  .ebtn.sel { border-color: #555; background: #fff; box-shadow: 0 0 0 2px #ddd; }
-  .comment { background: #fff; border: 1px solid #ebebeb; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 14px; }
-  .comment label { font-size: 13px; color: #888; display: block; margin-bottom: 6px; }
-  .comment textarea { width: 100%; height: 64px; font-size: 13px; font-family: inherit; background: #fafafa; border: 1px solid #ebebeb; border-radius: 8px; padding: 8px 10px; color: #1a1a1a; resize: none; line-height: 1.5; outline: none; }
-  .comment textarea:focus { border-color: #bbb; }
-  .submit-btn { width: 100%; padding: 14px; font-size: 15px; font-weight: 600; background: #1a1a1a; border: none; border-radius: 14px; color: #fff; cursor: pointer; transition: opacity 0.15s; }
-  .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .submit-btn:not(:disabled):active { opacity: 0.8; }
-  .loading { text-align: center; padding: 1rem; font-size: 13px; color: #aaa; display: none; }
-  .done { text-align: center; padding: 3rem 1rem; display: none; }
-  .done .big { font-size: 52px; margin-bottom: 14px; }
-  .done h2 { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
-  .done p { font-size: 14px; color: #888; }
-  .error-msg { background: #fff0f0; border: 1px solid #ffc5c5; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #c0392b; margin-bottom: 10px; display: none; }
-  .wrong-day { text-align: center; padding: 3rem 1rem; }
-  .wrong-day .big { font-size: 48px; margin-bottom: 14px; }
-  .wrong-day h2 { font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
-  .wrong-day p { font-size: 13px; color: #888; }
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Pulso da semana · Caju Limão</title>
+<link rel="stylesheet" href="pulso.css">
+<script src="pulso-config.js"></script>
 </head>
 <body>
-<div class="app">
+<header class="top"><div class="wrap">
+  <div class="brand">CAJU LIMÃO <span>· PULSO</span></div>
+</div></header>
+<div class="proto" id="testeBanner" style="display:none;background:#2b2b2b;color:#ffd9b8;font-size:12px;text-align:center;padding:6px 12px">MODO TESTE: esta resposta é gravada como teste e não entra em nenhum indicador nem no Mural.</div>
 
-  <div id="wrong-day" class="wrong-day" style="display:none">
-    <div class="big">📅</div>
-    <h2>A pesquisa não está disponível hoje</h2>
-    <p>A pesquisa é enviada toda segunda-feira e sexta-feira.<br>Volte no próximo dia disponível.</p>
+<main>
+<section id="s-form" class="screen on">
+ <div class="form" id="formWrap">
+  <h1>Pulso da semana</h1>
+  <p class="sub">Leva 1 minuto. Não pedimos seu nome. Sua opinião ajuda a decidir o que muda por aqui, e o que for feito aparece no Mural da equipe.</p>
+  <div id="qs"></div>
+
+  <div class="q">
+    <div class="t">Sua área (opcional)</div>
+    <div class="h">Só aparece em resultados com 5 respostas ou mais por área.</div>
+    <div class="seg" id="area">
+      <button type="button" data-v="Front">Front</button><button type="button" data-v="Back">Back</button><button type="button" data-v="CPD">CPD</button><button type="button" data-v="" class="sel">Prefiro não dizer</button>
+    </div>
   </div>
 
-  <div id="survey-seg" style="display:none">
-    <div class="header">
-      <div class="brand">Boteco Caju Limao</div>
-      <div class="day-badge badge-seg">Segunda-feira</div>
-      <h1>Como você está chegando hoje?</h1>
-      <div class="sub" id="dt-seg"></div>
-    </div>
-    <div class="progress"><div class="progress-fill" id="prog-seg" style="width:0%"></div></div>
-    <div class="anon">Resposta anônima — seja honesto</div>
-    <div class="card">
-      <div class="qlabel">Como você chegou hoje?</div>
-      <div class="qdesc">Seu estado antes de começar o turno</div>
-      <div class="scale" data-q="chegada" data-s="seg">
-        <button class="ebtn" data-v="1">😩</button>
-        <button class="ebtn" data-v="2">😕</button>
-        <button class="ebtn" data-v="3">😐</button>
-        <button class="ebtn" data-v="4">🙂</button>
-        <button class="ebtn" data-v="5">💪</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="qlabel">Sua disposição para a semana</div>
-      <div class="qdesc">Energia física e mental</div>
-      <div class="scale" data-q="disposicao" data-s="seg">
-        <button class="ebtn" data-v="1">🪫</button>
-        <button class="ebtn" data-v="2">😮‍💨</button>
-        <button class="ebtn" data-v="3">😶</button>
-        <button class="ebtn" data-v="4">⚡</button>
-        <button class="ebtn" data-v="5">🔥</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="qlabel">Vontade de dar o seu melhor hoje</div>
-      <div class="qdesc">Engajamento com o trabalho</div>
-      <div class="scale" data-q="engajamento" data-s="seg">
-        <button class="ebtn" data-v="1">😴</button>
-        <button class="ebtn" data-v="2">😑</button>
-        <button class="ebtn" data-v="3">🤷</button>
-        <button class="ebtn" data-v="4">😊</button>
-        <button class="ebtn" data-v="5">🏆</button>
-      </div>
-    </div>
-    <div class="comment">
-      <label>Quer adicionar algo? (opcional)</label>
-      <textarea id="obs-seg" placeholder="Não precisa se identificar..."></textarea>
-    </div>
-    <div class="error-msg" id="err-seg">Erro ao enviar. Verifique sua conexão e tente novamente.</div>
-    <div class="loading" id="load-seg">Enviando...</div>
-    <button class="submit-btn" id="btn-seg" disabled onclick="submitSurvey('seg')">Enviar</button>
+  <div class="q">
+    <label class="t" for="t-elogio">O que funcionou bem esta semana?</label>
+    <div class="h">Elogios a situações, equipes ou atitudes. Opcional.</div>
+    <textarea id="t-elogio" maxlength="600" placeholder="Ex.: a escala saiu cedo, a refeição de sábado estava ótima…"></textarea>
+  </div>
+  <div class="q">
+    <label class="t" for="t-melhora">O que precisa melhorar?</label>
+    <div class="h">Fale de situações, não de pessoas. Opcional.</div>
+    <textarea id="t-melhora" maxlength="600" placeholder="Ex.: falta talher no aparador nos horários de pico"></textarea>
+  </div>
+  <div class="q">
+    <label class="t" for="t-sug">Sua sugestão: se você decidisse, o que faria?</label>
+    <div class="h">Ideias concretas podem ir para o Mural para a equipe apoiar. Opcional.</div>
+    <textarea id="t-sug" maxlength="600" placeholder="Ex.: publicar a escala toda quinta até as 18h"></textarea>
   </div>
 
-  <div id="survey-sex" style="display:none">
-    <div class="header">
-      <div class="brand">Boteco Caju Limao</div>
-      <div class="day-badge badge-sex">Sexta-feira</div>
-      <h1>Como foi a semana para você?</h1>
-      <div class="sub" id="dt-sex"></div>
-    </div>
-    <div class="progress"><div class="progress-fill" id="prog-sex" style="width:0%"></div></div>
-    <div class="anon">Resposta anônima — seja honesto</div>
-    <div class="card">
-      <div class="qlabel">Satisfação com a refeição do staff</div>
-      <div class="qdesc">Qualidade e variedade da comida essa semana</div>
-      <div class="scale" data-q="comida" data-s="sex">
-        <button class="ebtn" data-v="1">🤢</button>
-        <button class="ebtn" data-v="2">😬</button>
-        <button class="ebtn" data-v="3">🙂</button>
-        <button class="ebtn" data-v="4">😋</button>
-        <button class="ebtn" data-v="5">🤤</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="qlabel">Como você avalia a liderança essa semana?</div>
-      <div class="qdesc">Suporte, comunicação e reconhecimento</div>
-      <div class="scale" data-q="lideranca" data-s="sex">
-        <button class="ebtn" data-v="1">😡</button>
-        <button class="ebtn" data-v="2">😒</button>
-        <button class="ebtn" data-v="3">😐</button>
-        <button class="ebtn" data-v="4">😌</button>
-        <button class="ebtn" data-v="5">🤩</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="qlabel">Como você se sente em trabalhar aqui?</div>
-      <div class="qdesc">Satisfação geral com a empresa</div>
-      <div class="scale" data-q="empresa" data-s="sex">
-        <button class="ebtn" data-v="1">😔</button>
-        <button class="ebtn" data-v="2">😒</button>
-        <button class="ebtn" data-v="3">😐</button>
-        <button class="ebtn" data-v="4">😊</button>
-        <button class="ebtn" data-v="5">🥰</button>
-      </div>
-    </div>
-    <div class="comment">
-      <label>O que poderia ter sido melhor essa semana? (opcional)</label>
-      <textarea id="obs-sex" placeholder="Crítica ou sugestão — tudo é bem-vindo..."></textarea>
-    </div>
-    <div class="error-msg" id="err-sex">Erro ao enviar. Verifique sua conexão e tente novamente.</div>
-    <div class="loading" id="load-sex">Enviando...</div>
-    <button class="submit-btn" id="btn-sex" disabled onclick="submitSurvey('sex')">Enviar</button>
-  </div>
+  <!-- honeypot: invisível para pessoas; robôs costumam preencher -->
+  <div class="hp" aria-hidden="true"><label for="site">Não preencha</label><input type="text" id="site" name="site" tabindex="-1" autocomplete="off"></div>
 
-  <div class="done" id="done">
-    <div class="big" id="done-emoji">✅</div>
-    <h2 id="done-title">Obrigado pela resposta</h2>
-    <p id="done-msg">Sua opinião contribui para melhorar o ambiente de trabalho.</p>
-  </div>
+  <div class="notice"><b>Situação grave?</b> Assédio, agressão, discriminação ou problema com pagamento deve ir para o canal reservado: <a id="canal" href="https://wa.me/556194658006" target="_blank" rel="noopener" style="color:#9a4a0b;font-weight:700">+55 61 9465-8006</a> (WhatsApp). Lá o caso é tratado com sigilo e apuração.</div>
+  <div class="notice" style="border-color:#999;background:#f1f1f1">Não pedimos nome, e-mail nem matrícula. Mesmo assim, detalhes muito específicos podem identificar você ou colegas. Os comentários são lidos só pela coordenação da pesquisa e só aparecem no Mural depois de revisados.</div>
 
-</div>
+  <button class="btn pri" style="width:100%;padding:14px" id="send" type="button">Enviar</button>
+  <div class="err" id="ferr" role="alert"></div>
+ </div>
+
+ <div class="form" id="thanks" style="display:none">
+  <div class="card" style="text-align:center">
+    <h1>Recebido. Obrigado!</h1>
+    <p class="sub">Sua resposta foi gravada. O que virar ação aparece no Mural da equipe.</p>
+    <div class="row" style="justify-content:center">
+      <button class="btn" id="again" type="button" style="display:none">Responder de novo (teste)</button>
+      <a class="btn dark" href="mural.html" style="text-decoration:none">Ver o Mural da equipe</a>
+    </div>
+  </div>
+ </div>
+</section>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitulo"><div class="box">
+  <h2 id="mTitulo">Quer revisar o texto?</h2>
+  <p>Seu comentário tem palavras ofensivas. Ele será lido do mesmo jeito, mas textos sem ofensas têm mais chance de virar ação e de aparecer no Mural.</p>
+  <div class="row" style="justify-content:flex-end">
+    <button class="btn" id="mFix" type="button">Reescrever</button>
+    <button class="btn dark" id="mSend" type="button">Enviar assim mesmo</button>
+  </div>
+</div></div>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzzwL0CTRMQi_3QKwxrNtdVX0GsB63yFyyzDrDIyJswBohMQ7FRFKPUkJ-Re0fFDS5/exec';
-  const ans = { seg: {}, sex: {} };
+(function(){
+"use strict";
+function el(tag,attrs,kids){var e=document.createElement(tag);if(attrs)for(var k in attrs){if(k==="class")e.className=attrs[k];else if(k==="text")e.textContent=attrs[k];else e.setAttribute(k,attrs[k]);}(kids||[]).forEach(function(c){if(c==null)return;e.appendChild(typeof c==="string"?document.createTextNode(c):c);});return e;}
+function $(id){return document.getElementById(id);}
 
-  function init() {
-    const params = new URLSearchParams(window.location.search);
-    const preview = params.get('preview');
-    const realDay = new Date().getDay();
-    const day = preview === 'seg' ? 1 : preview === 'sex' ? 5 : realDay;
-    const isSeg = day === 1;
-    const isSex = day === 5;
-    const dateStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-    if (isSeg) {
-      document.getElementById('dt-seg').textContent = dateStr;
-      document.getElementById('survey-seg').style.display = 'block';
-    } else if (isSex) {
-      document.getElementById('dt-sex').textContent = dateStr;
-      document.getElementById('survey-sex').style.display = 'block';
-    } else {
-      document.getElementById('wrong-day').style.display = 'block';
-    }
-  }
+var API=window.PULSO_API||"";
+var TESTE=new URLSearchParams(location.search).get("teste")==="1";
+if(TESTE){$("testeBanner").style.display="block";$("again").style.display="";}
 
-  document.querySelectorAll('.scale').forEach(scale => {
-    const survey = scale.dataset.s;
-    scale.querySelectorAll('.ebtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        scale.querySelectorAll('.ebtn').forEach(b => b.classList.remove('sel'));
-        btn.classList.add('sel');
-        ans[survey][scale.dataset.q] = +btn.dataset.v;
-        const filled = Object.keys(ans[survey]).length;
-        document.getElementById('prog-' + survey).style.width = (filled / 3 * 100) + '%';
-        document.getElementById('btn-' + survey).disabled = filled < 3;
-      });
-    });
-  });
+/* Perguntas v3: textos e rótulos idênticos ao protótipo aprovado. */
+var Q=[
+ {k:"disposicao",t:"Como você está chegando para a semana?",h:"Seu ânimo e energia agora.",a:"Muito mal",b:"Muito bem"},
+ {k:"escala",t:"Esta semana eu soube com antecedência minha escala e meus intervalos.",h:"Pergunta nova.",a:"Discordo totalmente",b:"Concordo totalmente"},
+ {k:"comida",t:"Satisfação com a refeição do staff",h:"Mesmo texto de antes, para manter a comparação.",a:"Muito insatisfeito",b:"Muito satisfeito"},
+ {k:"lideranca",t:"Quando precisei, minha liderança me ouviu e resolveu ou deu retorno.",h:"Sobre atitudes, não sobre pessoas.",a:"Nunca",b:"Sempre"},
+ {k:"empresa",t:"Como você se sente em trabalhar aqui?",h:"Mesmo texto de antes, para manter a comparação.",a:"Muito mal",b:"Muito bem"}
+];
+var ans={};
+Q.forEach(function(q,i){
+  var sc=el("div",{class:"scale",role:"radiogroup","aria-label":q.t});
+  for(var v=1;v<=5;v++){(function(v){var b=el("button",{type:"button",text:String(v),role:"radio","aria-checked":"false","aria-label":q.t+" nota "+v});b.onclick=function(){ans[q.k]=v;Array.prototype.forEach.call(sc.children,function(x){var s=x===b;x.classList.toggle("sel",s);x.setAttribute("aria-checked",s?"true":"false");});};sc.appendChild(b);})(v);}
+  $("qs").appendChild(el("div",{class:"q"},[el("div",{class:"t",text:(i+1)+". "+q.t}),el("div",{class:"h",text:q.h}),sc,el("div",{class:"ends"},[el("span",{text:"1 · "+q.a}),el("span",{text:q.b+" · 5"})])]));
+});
+var area="";
+Array.prototype.forEach.call($("area").children,function(b){b.onclick=function(){area=b.dataset.v;Array.prototype.forEach.call($("area").children,function(x){x.classList.toggle("sel",x===b);});};});
 
-  function submitSurvey(s) {
-    const btn = document.getElementById('btn-' + s);
-    const load = document.getElementById('load-' + s);
-    const err = document.getElementById('err-' + s);
-    btn.disabled = true;
-    load.style.display = 'block';
-    err.style.display = 'none';
-    const payload = {
-      ...ans[s],
-      tipo: s,
-      obs: document.getElementById('obs-' + s).value.trim(),
-      ts: new Date().toISOString(),
-      data: new Date().toLocaleDateString('pt-BR')
-    };
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    })
-    .then(() => {
-      document.getElementById('survey-' + s).style.display = 'none';
-      const doneEl = document.getElementById('done');
-      if (s === 'seg') {
-        document.getElementById('done-emoji').textContent = '✅';
-        document.getElementById('done-title').textContent = 'Obrigado pela resposta';
-        document.getElementById('done-msg').textContent = 'Sua opinião contribui para melhorar o ambiente de trabalho.';
-      } else {
-        document.getElementById('done-emoji').textContent = '✅';
-        document.getElementById('done-title').textContent = 'Obrigado pela resposta';
-        document.getElementById('done-msg').textContent = 'Bom descanso. Até segunda.';
-      }
-      doneEl.style.display = 'block';
-    })
-    .catch(() => {
-      load.style.display = 'none';
-      err.style.display = 'block';
-      btn.disabled = false;
-    });
-  }
+/* Canal reservado vindo da Config (só aceita link https do WhatsApp). */
+if(API){fetch(API+"?acao=config").then(function(r){return r.json();}).then(function(c){
+  if(c&&c.ok&&/^https:\/\/wa\.me\/\d{10,15}$/.test(c.canal_grave||"")){$("canal").href=c.canal_grave;if(c.canal_grave_rotulo)$("canal").textContent=c.canal_grave_rotulo;}
+}).catch(function(){});}
 
-  init();
+var pendente=null;
+function payload(confirmar){
+  return {acao:"enviar",notas:Object.assign({},ans),area:area,
+    textos:{elogio:$("t-elogio").value.trim(),melhora:$("t-melhora").value.trim(),sugestao:$("t-sug").value.trim()},
+    teste:TESTE,confirmarOfensa:!!confirmar,site:$("site").value};
+}
+function ocupado(s){$("send").disabled=s;$("send").textContent=s?"Enviando…":"Enviar";}
+function enviar(confirmar){
+  if(!API){$("ferr").textContent="Formulário sem endereço de envio configurado.";return;}
+  ocupado(true);$("ferr").textContent="";
+  fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload(confirmar))})
+  .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+  .then(function(r){
+    ocupado(false);
+    if(r&&r.ok===true){$("formWrap").style.display="none";$("thanks").style.display="block";window.scrollTo(0,0);return;}
+    if(r&&r.ofensa){$("modal").classList.add("on");$("mFix").focus();return;}
+    $("ferr").textContent="Não foi possível enviar: "+((r&&r.erro)||"erro desconhecido")+" Suas respostas continuam aqui; tente de novo.";
+  })
+  .catch(function(){ocupado(false);$("ferr").textContent="Não foi possível enviar agora (sem conexão ou servidor indisponível). Suas respostas continuam aqui; tente de novo.";});
+}
+$("send").onclick=function(){
+  var faltam=Q.filter(function(q){return !ans[q.k];});
+  if(faltam.length){$("ferr").textContent="Responda as 5 perguntas de 1 a 5 (faltam "+faltam.length+").";return;}
+  enviar(false);
+};
+$("mFix").onclick=function(){$("modal").classList.remove("on");$("t-melhora").focus();};
+$("mSend").onclick=function(){$("modal").classList.remove("on");enviar(true);};
+$("again").onclick=function(){ans={};area="";Array.prototype.forEach.call(document.querySelectorAll(".scale button.sel,.seg button.sel"),function(b){b.classList.remove("sel");b.setAttribute("aria-checked","false");});$("area").lastElementChild.classList.add("sel");["t-elogio","t-melhora","t-sug"].forEach(function(i){$(i).value="";});$("thanks").style.display="none";$("formWrap").style.display="block";};
+})();
 </script>
 </body>
 </html>

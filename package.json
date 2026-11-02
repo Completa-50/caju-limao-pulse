@@ -1,0 +1,10 @@
+{
+  "name": "caju-limao-pulse",
+  "private": true,
+  "description": "Pesquisa Pulso v3 — Boteco Caju Limão Asa Norte",
+  "scripts": {
+    "build": "node tools/build.js",
+    "test": "node --test tests/unit/*.test.js",
+    "e2e": "node tests/e2e/run.js"
+  }
+}

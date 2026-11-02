@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Mural da equipe · Caju Limão</title>
+<link rel="stylesheet" href="pulso.css">
+<script src="pulso-config.js"></script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand">CAJU LIMÃO <span>· PULSO</span></div>
+</div></header>
+
+<main>
+<section id="s-mural" class="screen on">
+  <div class="hero">
+    <h1 style="color:#fff">Mural da equipe</h1>
+    <p>Você falou, a gente respondeu. Tudo aqui foi revisado antes de publicar, sem nomes.</p>
+  </div>
+  <div class="quiz">
+    <div class="row" style="justify-content:space-between">
+      <span class="chip c-or">QUIZ DO CAJU LIMÃO</span>
+      <span class="muted">treino que vale prêmio</span>
+    </div>
+    <h2 style="font-size:22px;margin:10px 0 4px">Quem conhece a casa, ganha.</h2>
+    <p style="margin:0 0 12px">Gire a roleta, mostre o que você sabe e junte moedas para trocar por prêmio de verdade. Cinco minutos no intervalo já rendem.</p>
+    <div class="trilhas">
+      <div><b>Fichas técnicas</b><span>O que vai em cada prato e em cada drink</span></div>
+      <div><b>Operação</b><span>Padrões de salão, bar, cozinha e caixa</span></div>
+      <div><b>Cultura Caju</b><span>Nosso jeito de receber e trabalhar</span></div>
+    </div>
+    <div class="premios"><span>Itens do cardápio</span><span>Camisa</span><span>Boné</span><span>Pix</span><span>Folga</span></div>
+    <div class="row" style="margin-top:12px">
+      <a class="btn pri" id="lnkQuiz" href="https://caju-quiz-gadelha.vercel.app/?loja=0683f5" target="_blank" rel="noopener" style="text-decoration:none;padding:12px 22px;font-size:16px">Girar a roleta</a>
+      <span class="muted">Primeira vez? Digite seu nome, toque nele na lista e crie um PIN de 4 números. Não achou seu nome? Use "cadastro novo".</span>
+    </div>
+    <div class="modos">
+      <div><b>Roleta</b> · treino livre, quando quiser. Erro aqui não pesa, só ensina.</div>
+      <div><b>Prova da semana</b> · vale ranking e entra no histórico considerado em promoções, junto com as demais competências.</div>
+    </div>
+    <div class="sep">O Quiz é identificado pelo seu nome. A Pesquisa Pulso continua anônima e não tem nenhuma ligação com o Quiz.</div>
+  </div>
+  <h2 style="margin:18px 0 10px">Aprenda e cresça</h2>
+  <div style="margin-bottom:14px">
+  <div class="card flash" style="margin-bottom:0">
+    <div class="row" style="justify-content:space-between">
+      <h2 style="margin:0">Treinamentos na plataforma Flash</h2>
+      <span class="chip c-info">Para colaboradores registrados</span>
+    </div>
+    <p style="margin:8px 0 10px">A Flash, o mesmo app do seu vale-transporte, também tem treinamentos da empresa. Faça no seu ritmo e chegue mais preparado para o Quiz e para a prova da semana.</p>
+    <ol style="margin:0 0 12px;padding-left:20px">
+      <li>Toque em <b>Acessar a Flash</b></li>
+      <li>Entre com o mesmo CPF e senha que você já usa para o vale-transporte</li>
+      <li>No menu, toque em <b>Treinamentos</b></li>
+    </ol>
+    <div class="row">
+      <a class="btn dark" id="lnkFlash" href="https://hros.flashapp.com.br/authentication/login" target="_blank" rel="noopener" style="text-decoration:none">Acessar a Flash</a>
+      <span class="muted">Esqueceu a senha? Use "Esqueci minha senha" na tela de login. Freela não tem acesso à Flash, mas o Quiz está aberto para todos.</span>
+    </div>
+    <div class="sep" style="font-size:12px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px;margin-top:10px">O link abre o site oficial da Flash. Nunca digite seu CPF ou senha da Flash em outra página.</div>
+  </div>
+  </div>
+  <div id="estado" class="card" style="display:none"><p class="err" id="estadoMsg"></p><button class="btn sm" id="tentar" type="button">Tentar de novo</button></div>
+  <div class="grid g2">
+    <div>
+      <div class="card"><h2>Ações da liderança</h2><div id="mAcoes"><p class="empty">Carregando…</p></div></div>
+      <div class="card"><h2>Comunicados</h2><div id="mCom"><p class="empty">Carregando…</p></div></div>
+    </div>
+    <div>
+      <div class="card"><h2>O que ouvimos nas últimas 4 semanas</h2><div id="mPulse"><p class="empty">Carregando…</p></div></div>
+      <div class="card"><h2>Elogios da equipe</h2><div id="mElo"><p class="empty">Carregando…</p></div></div>
+      <div class="card"><h2>O que a equipe apontou</h2><p class="muted" style="margin-top:-6px">Ponderações revisadas, sem nomes.</p><div id="mPond"><p class="empty">Carregando…</p></div></div>
+      <div class="card"><h2>Sugestões da equipe</h2><p class="muted" style="margin-top:-6px">Apoie as que você quer ver primeiro.</p><div id="mSug"><p class="empty">Carregando…</p></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+function el(tag,attrs,kids){var e=document.createElement(tag);if(attrs)for(var k in attrs){if(k==="class")e.className=attrs[k];else if(k==="text")e.textContent=attrs[k];else e.setAttribute(k,attrs[k]);}(kids||[]).forEach(function(c){if(c==null)return;e.appendChild(typeof c==="string"?document.createTextNode(c):c);});return e;}
+function $(id){return document.getElementById(id);}
+function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+function dm(ymd){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(ymd||"");return m?m[3]+"/"+m[2]:"";}
+var API=window.PULSO_API||"";
+
+/*
+ * Um apoio por sugestão por navegador, guardado no localStorage. É uma proteção
+ * leve, não garantia: quem limpar o navegador ou usar outro aparelho pode apoiar
+ * de novo. O servidor só soma; não registra quem apoiou.
+ */
+var CHAVE="pulso_v3_apoios";
+function apoiados(){try{var v=JSON.parse(localStorage.getItem(CHAVE)||"[]");return Array.isArray(v)?v:[];}catch(e){return [];}}
+function marcarApoio(id){try{var a=apoiados();if(a.indexOf(id)<0)a.push(id);localStorage.setItem(CHAVE,JSON.stringify(a.slice(-500)));}catch(e){}}
+
+var ST={and:["Em andamento","c-warn"],feito:["Feito","c-ok"],nao:["Não vamos fazer","c-gray"]};
+function acaoNode(a){
+  var st=ST[a.status]||["",""];
+  var n=el("div",{class:"act "+(ST[a.status]?a.status:"")});
+  n.appendChild(el("div",{class:"row"},[el("span",{class:"chip c-or",text:a.tema}),st[0]?el("span",{class:"chip "+st[1],text:st[0]}):null]));
+  n.appendChild(el("div",{class:"muted",style:"margin-top:6px",text:"O que ouvimos: "+a.ouvimos}));
+  n.appendChild(el("div",{style:"font-weight:600;margin:2px 0",text:a.acao}));
+  n.appendChild(el("div",{class:"muted",text:"Responsável: "+a.responsavel+(a.prazo?" · prazo: "+a.prazo:"")+" · publicado "+dm(a.publicado_em)}));
+  return n;
+}
+function vazio(box,txt){box.appendChild(el("p",{class:"empty",text:txt}));}
+function lista(id,itens,txtVazio){var b=$(id);clear(b);if(!itens.length){vazio(b,txtVazio);return;}itens.forEach(function(x){b.appendChild(el("div",{class:"quote"},[el("div",{text:x.texto,style:"white-space:pre-wrap"}),el("div",{class:"muted",text:dm(x.publicado_em)})]));});}
+
+function render(m){
+  if(m.config){
+    if(/^https:\/\//.test(m.config.link_quiz||""))$("lnkQuiz").href=m.config.link_quiz;
+    if(/^https:\/\//.test(m.config.link_flash||""))$("lnkFlash").href=m.config.link_flash;
+  }
+  var a=$("mAcoes");clear(a);if(!m.acoes.length)vazio(a,"Nenhuma ação publicada ainda.");m.acoes.forEach(function(x){a.appendChild(acaoNode(x));});
+  var c=$("mCom");clear(c);if(!m.comunicados.length)vazio(c,"Nenhum comunicado ainda.");m.comunicados.forEach(function(x){c.appendChild(el("div",{class:"quote"},[el("div",{style:"font-weight:600",text:x.titulo}),el("div",{text:x.mensagem,style:"white-space:pre-wrap;margin:4px 0"}),el("div",{class:"muted",text:"— "+x.assinatura+" · "+dm(x.publicado_em)})]));});
+  var p=$("mPulse");clear(p);
+  if(!m.pulso||!m.pulso.suficiente){vazio(p,"Poucas respostas para mostrar resultados.");}
+  else{var t=el("table");m.pulso.dimensoes.forEach(function(d){if(d.media==null)return;var bar=el("div",{class:"bar"});bar.style.width=(d.media/5*100)+"%";t.appendChild(el("tr",{},[el("td",{text:d.rotulo}),el("td",{style:"width:45%"},[bar]),el("td",{text:d.media.toFixed(1).replace(".",",")})]));});p.appendChild(t);p.appendChild(el("p",{class:"muted",text:"Média de 1 a 5 · "+m.pulso.n+" respostas · sem recorte por área"}));}
+  lista("mElo",m.elogios,"Ainda sem elogios publicados.");
+  lista("mPond",m.ponderacoes,"Ainda sem ponderações publicadas.");
+  var s=$("mSug");clear(s);if(!m.sugestoes.length)vazio(s,"Ainda sem sugestões publicadas.");
+  var ja=apoiados();
+  m.sugestoes.forEach(function(x){
+    var b=el("button",{class:"btn sm",type:"button",text:"Apoiar · "+x.apoios});
+    if(ja.indexOf(x.id)>=0){b.disabled=true;b.textContent="Apoiado · "+x.apoios;}
+    b.onclick=function(){
+      if(apoiados().indexOf(x.id)>=0)return;
+      b.disabled=true;
+      fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({acao:"apoiar",id:x.id})})
+      .then(function(r){return r.json();})
+      .then(function(r){if(r&&r.ok){marcarApoio(x.id);b.textContent="Apoiado · "+r.apoios;}else{b.disabled=false;b.textContent="Apoiar · "+x.apoios;alert((r&&r.erro)||"Não foi possível registrar o apoio.");}})
+      .catch(function(){b.disabled=false;alert("Sem conexão. Tente de novo.");});
+    };
+    s.appendChild(el("div",{class:"quote row",style:"justify-content:space-between"},[el("div",{text:x.texto,style:"flex:1;min-width:180px;white-space:pre-wrap"}),b]));
+  });
+}
+
+function carregar(){
+  $("estado").style.display="none";
+  if(!API){$("estadoMsg").textContent="Mural sem endereço de dados configurado.";$("estado").style.display="block";return;}
+  fetch(API+"?acao=mural",{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();})
+  .then(function(m){if(!m||m.ok!==true)throw new Error((m&&m.erro)||"resposta inválida");render(m);})
+  .catch(function(){$("estadoMsg").textContent="Não foi possível carregar o Mural agora.";$("estado").style.display="block";["mAcoes","mCom","mPulse","mElo","mPond","mSug"].forEach(function(i){clear($(i));});});
+}
+$("tentar").onclick=carregar;
+carregar();
+})();
+</script>
+</body>
+</html>

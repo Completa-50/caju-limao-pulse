@@ -1,0 +1,1 @@
+Arquivo gerado por tools/build.js. Não edite aqui: edite apps-script/src e rode npm run build.
