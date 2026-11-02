@@ -1,0 +1,4 @@
+node_modules/
+evidencias/tmp/
+.clasp.json
+.clasprc.json
