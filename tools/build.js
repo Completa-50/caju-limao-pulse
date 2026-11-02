@@ -12,12 +12,16 @@ const src = path.join(raiz, 'apps-script', 'src');
 const comum = ['Core.js', 'Dados.js', 'Setup.js'];
 const projetos = {
   publico: {
-    arquivos: [...comum, 'Publico.js'],
+    arquivos: [...comum, 'Publico.js', 'Alertas.js'],
     manifesto: {
       timeZone: 'America/Sao_Paulo',
       runtimeVersion: 'V8',
       exceptionLogging: 'STACKDRIVER',
-      oauthScopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      oauthScopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/script.send_mail',
+        'https://www.googleapis.com/auth/script.scriptapp'
+      ],
       webapp: { executeAs: 'USER_DEPLOYING', access: 'ANYONE_ANONYMOUS' }
     }
   },

@@ -34,7 +34,9 @@ function configurarPulsoV3() {
     ['CANAL_GRAVE', CONFIG_PADRAO.CANAL_GRAVE],
     ['CANAL_GRAVE_ROTULO', CONFIG_PADRAO.CANAL_GRAVE_ROTULO],
     ['LINK_QUIZ', CONFIG_PADRAO.LINK_QUIZ],
-    ['LINK_FLASH', CONFIG_PADRAO.LINK_FLASH]
+    ['LINK_FLASH', CONFIG_PADRAO.LINK_FLASH],
+    ['ALERTA_EMAIL', CONFIG_PADRAO.ALERTA_EMAIL],
+    ['LINK_PAINEL', '']
   ].forEach(function (kv) {
     if (existentes.indexOf(kv[0]) < 0) gravarLinha_(ABAS.config, kv, 'fim');
   });

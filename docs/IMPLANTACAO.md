@@ -21,7 +21,7 @@ A cópia contém comentários brutos. Ela não deve ser compartilhada com ningu�
 ## 3. Projeto PÚBLICO (teste)
 
 1. Acesse script.google.com e crie um Novo projeto com o nome `Pulso v3 - Publico`.
-2. Para cada arquivo de `apps-script/publico/`, crie um arquivo de script com o mesmo nome e cole o conteúdo: `Core`, `Dados`, `Setup`, `Publico`.
+2. Para cada arquivo de `apps-script/publico/`, crie um arquivo de script com o mesmo nome e cole o conteúdo: `Core`, `Dados`, `Setup`, `Publico`, `Alertas`.
 3. Em Configurações do projeto, marque "Mostrar arquivo de manifesto `appsscript.json`" e cole o conteúdo de `apps-script/publico/appsscript.json`.
 4. Em Configurações do projeto → Propriedades do script, crie `PLANILHA_ID` com o id da planilha de HOMOLOGAÇÃO.
 5. No editor, selecione a função `configurarPulsoV3` e clique em Executar. Autorize o acesso. O log deve terminar com "Abas históricas intactas".
@@ -29,6 +29,7 @@ A cópia contém comentários brutos. Ela não deve ser compartilhada com ningu�
    - Executar como: Eu.
    - Quem pode acessar: Qualquer pessoa.
 7. Copie a URL `/exec`. Ela é a **URL pública de teste**.
+8. Para testar o alerta, rode `verificarAlertas` uma vez pelo editor. Sem semana anterior com 5 respostas ou mais, o log diz "nada a enviar".
 
 ## 4. Projeto PAINEL (teste)
 
@@ -36,7 +37,7 @@ A cópia contém comentários brutos. Ela não deve ser compartilhada com ningu�
 2. Cole os arquivos de `apps-script/painel/`. Os scripts são `Core`, `Dados`, `Setup` e `Painel`. Os arquivos HTML são `Painel`, `Negado` e `Estilo`. Cole também o `appsscript.json`.
 3. Em Propriedades do script, crie:
    - `PLANILHA_ID`, com o id da planilha de HOMOLOGAÇÃO;
-   - `ALLOWLIST`, com `jeanbrito@cajupar.com, jbrito.49@gmail.com, botecocajulimao@gmail.com, jdossantos.49@gmail.com` (ajustar conforme a decisão sobre a conta compartilhada).
+   - `ALLOWLIST`, com `jeanbrito@cajupar.com, jbrito.49@gmail.com, jdossantos.49@gmail.com`. A conta compartilhada `botecocajulimao@gmail.com` fica de fora por decisão de 02/11/2026: o log precisa identificar quem moderou.
 4. Vá em Implantar → Nova implantação → App da Web:
    - Executar como: Usuário que acessa o app da Web.
    - Quem pode acessar: Qualquer pessoa com Conta do Google.
@@ -47,7 +48,7 @@ A cópia contém comentários brutos. Ela não deve ser compartilhada com ningu�
 
 O GitHub Pages só publica uma branch. Para não mexer no `main`, a homologação usa um repositório separado e temporário, `caju-limao-pulse-homolog`, com Pages ativo:
 
-1. Copie para ele `index.html`, `mural.html`, `pulso.css` e `pulso-config.js` da branch `v3`.
+1. Copie para ele `index.html`, `dashboard.html`, `pulso.css` e `pulso-config.js` da branch `v3`.
 2. No `pulso-config.js` desse repositório, cole a URL pública de teste.
 3. Siga `docs/HOMOLOGACAO.md`.
 
@@ -58,12 +59,13 @@ O GitHub Pages só publica uma branch. Para não mexer no `main`, a homologaçã
 3. No projeto público, rode `configurarPulsoV3()` contra a planilha real. Ele só cria abas novas e confere que `Segunda-feira` e `Sexta-feira` não mudaram.
 4. No projeto painel, rode `conferirHistoricoV2()` e confira no log se Comida e Empresa batem com a referência.
 5. Implantar → Gerenciar implantações → Editar → Nova versão, nos dois projetos. As URLs continuam as mesmas.
+5a. Na aba `Config` da planilha real, preencha `LINK_PAINEL` com a URL do painel. No projeto público, rode `instalarAlertaSemanal()` uma vez e autorize o envio de e-mail.
 6. **[aprovação]** Compartilhe a planilha real como Editor com as contas da allowlist.
 7. **[aprovação]** No `main` do repositório:
    - crie a tag `v2-final` no commit atual (`2eff181`);
    - cole a URL pública definitiva em `pulso-config.js`;
    - faça o merge da `v3`;
-   - para o `dashboard.html`, substitua pelo Mural ou use `docs/dashboard-redirect.html`, conforme a decisão do Jean.
+   - com o merge, o `dashboard.html` passa a ser o Mural (decisão de 02/11/2026).
 8. **[aprovação]** Na planilha real, vá em Compartilhar → Acesso geral → Restrito. Isso remove o "qualquer pessoa com o link".
 9. Confirme o fechamento com uma janela anônima ou `curl`:
    `https://docs.google.com/spreadsheets/d/<id>/gviz/tq?tqx=out:json` não pode devolver dados. Deve redirecionar para o login ou responder erro.

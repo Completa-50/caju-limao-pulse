@@ -313,7 +313,7 @@ test('XSS: comentário com <img onerror> aparece como texto no painel e no Mural
   await page.context().close();
 
   const pm = await novaPagina(390);
-  await pm.goto(BASE + '/mural.html');
+  await pm.goto(BASE + '/dashboard.html');
   await pm.waitForSelector('#mSug .quote');
   assert.match(await pm.textContent('#mSug'), /<img src=y onerror=alert\(2\)> sugestão editada <b>negrito<\/b>/);
   assert.equal(await pm.locator('#mSug img, #mSug b').count(), 0);
@@ -323,7 +323,7 @@ test('XSS: comentário com <img onerror> aparece como texto no painel e no Mural
 
 test('Mural: só o publicado; apoio único por navegador; ordem do protótipo', async () => {
   const page = await novaPagina(390);
-  await page.goto(BASE + '/mural.html');
+  await page.goto(BASE + '/dashboard.html');
   await page.waitForSelector('#mSug .quote');
   const titulos = await page.locator('main h1, main h2').allTextContents();
   const ordem = ['Mural da equipe', 'Quem conhece a casa, ganha.', 'Aprenda e cresça', 'Treinamentos na plataforma Flash',
@@ -371,6 +371,21 @@ test('rota pública não expõe respostas individuais nem comentários não publ
   assert.equal((await post({ acao: 'apoiar', id: comId })).ok, false, 'não dá para apoiar item fora do Mural');
 });
 
+test('alerta semanal: só agregados, para o e-mail da Config, e conta compartilhada barrada', async () => {
+  const r = await (await fetch(BASE + '/__sim/alerta')).json();
+  assert.equal(r.gatilhos.length, 1);
+  assert.deepEqual([r.gatilhos[0].fn, r.gatilhos[0].dia, r.gatilhos[0].hora, r.gatilhos[0].tz], ['verificarAlertas', 'MONDAY', 9, 'America/Sao_Paulo']);
+  for (const e of r.emails) {
+    assert.equal(e.to, 'jeanbrito@cajupar.com');
+    for (const c of (await aba('Comentarios_v3')).slice(1)) assert.equal(e.body.includes(c[4]), false);
+  }
+  assert.equal(JSON.stringify(await mural()).includes('jeanbrito'), false, 'e-mail de alerta não aparece no Mural');
+  const cfg = await (await fetch(BASE + '/exec?acao=config')).text();
+  assert.equal(cfg.includes('@'), false);
+  const compartilhada = await (await fetch(BASE + '/painel/run', { method: 'POST', body: JSON.stringify({ fn: 'painelFila', args: ['todos'], como: 'botecocajulimao@gmail.com' }) })).json();
+  assert.equal(compartilhada.__erro, 'Acesso negado.');
+});
+
 test('abas históricas intactas após todo o fluxo', async () => {
   const seg = await aba('Segunda-feira');
   const sex = await aba('Sexta-feira');
@@ -383,7 +398,7 @@ test('abas históricas intactas após todo o fluxo', async () => {
 });
 
 test('layout: sem rolagem horizontal em 390 px; prints em 1280 px', async () => {
-  for (const [url, nome] of [['/index.html', 'form'], ['/painel?como=' + JEAN, 'painel'], ['/mural.html', 'mural']]) {
+  for (const [url, nome] of [['/index.html', 'form'], ['/painel?como=' + JEAN, 'painel'], ['/dashboard.html', 'mural']]) {
     const page = await novaPagina(390);
     await page.goto(BASE + url);
     await page.waitForLoadState('networkidle');

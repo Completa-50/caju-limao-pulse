@@ -5,9 +5,9 @@
  *
  * Roda o código real de apps-script/publico e apps-script/painel sobre os
  * serviços simulados de fake-google.js, com dados SINTÉTICOS (nenhum dado
- * real da planilha). Serve também index.html e mural.html como no Pages.
+ * real da planilha). Serve também index.html e dashboard.html como no Pages.
  *
- *   /index.html, /mural.html      páginas públicas
+ *   /index.html, /dashboard.html      páginas públicas
  *   /exec                         implantação pública simulada (GET/POST)
  *   /painel?como=<email>          painel interno, simulando a sessão Google
  *   /__sim/aba?nome=<aba>         (só simulação) leitura da aba para os testes
@@ -18,7 +18,7 @@ const path = require('path');
 const { carregarProjeto, novoEstado } = require('./fake-google');
 
 const raiz = path.join(__dirname, '..', '..');
-const ALLOWLIST = 'jeanbrito@cajupar.com, jbrito.49@gmail.com, botecocajulimao@gmail.com, jdossantos.49@gmail.com';
+const ALLOWLIST = 'jeanbrito@cajupar.com, jbrito.49@gmail.com, jdossantos.49@gmail.com';
 
 function criar() {
   const estado = novoEstado();
@@ -113,6 +113,16 @@ function iniciar(porta) {
           res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
           return res.end(JSON.stringify(sh ? { rows: sh.rows, escritas: sh.escritas } : null));
         }
+        if (url.pathname === '/__sim/alerta') {
+          // Semeia uma semana anterior ruim (dados sintéticos) e roda o alerta.
+          const semanaPassada = app.publico.somarDias(app.publico.hojeSP_(), -7);
+          for (let i = 0; i < 6; i++) app.publico.gravarLinha_('Respostas_v3', ['AL' + i, semanaPassada, app.publico.semanaIso(semanaPassada), 'v3', '', 1, 2, 2, 3, 4, 'FALSE'], 'fim');
+          app.publico.instalarAlertaSemanal();
+          app.publico.instalarAlertaSemanal(); // idempotente
+          const av = app.publico.verificarAlertas();
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+          return res.end(JSON.stringify({ av, emails: app.estado.emails || [], gatilhos: app.estado.gatilhos || [] }));
+        }
         if (url.pathname === '/__sim/reiniciar') {
           app = criar();
           res.writeHead(200);
@@ -123,7 +133,7 @@ function iniciar(porta) {
           return res.end('window.PULSO_API = location.origin + "/exec";\n');
         }
         const arquivo = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
-        if (!['index.html', 'mural.html', 'pulso.css'].includes(arquivo)) {
+        if (!['index.html', 'dashboard.html', 'pulso.css'].includes(arquivo)) {
           res.writeHead(404);
           return res.end('não encontrado');
         }

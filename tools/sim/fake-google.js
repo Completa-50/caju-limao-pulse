@@ -154,6 +154,13 @@ function carregarProjeto(dir, estado) {
         return tpl;
       }
     },
+    MailApp: { sendEmail: m => { (estado.emails = estado.emails || []).push(m); } },
+    ScriptApp: {
+      WeekDay: { MONDAY: 'MONDAY' },
+      getProjectTriggers: () => (estado.gatilhos || []).map(g => ({ getHandlerFunction: () => g.fn, _g: g })),
+      deleteTrigger: t => { estado.gatilhos = (estado.gatilhos || []).filter(g => g !== t._g); },
+      newTrigger: fn => { const g = { fn }; const b = { timeBased: () => b, onWeekDay: d => { g.dia = d; return b; }, atHour: h => { g.hora = h; return b; }, inTimezone: z => { g.tz = z; return b; }, create: () => { (estado.gatilhos = estado.gatilhos || []).push(g); return g; } }; return b; }
+    },
     Math, JSON, Date, Object, Array, String, Number, Error, RegExp, isFinite, parseInt
   };
   vm.createContext(ctx);

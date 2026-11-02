@@ -263,3 +263,27 @@ test('arredondarMedia: empate vai para o par, demais casos normais', () => {
   assert.equal(C.arredondarMedia(1, 8), 0.12);     // 0,125 -> par
   assert.equal(C.arredondarMedia(3, 8), 0.38);     // 0,375 -> par
 });
+
+test('avaliarAlertas: cortes 2,5 e 3,2, só com n >= NMIN, sem teste', () => {
+  const sem = '2026-W44';
+  const linha = (n) => ({ semana_iso: sem, area: 'Front', teste: false, disposicao: n, escala: 2, comida: 3, lideranca: 4, empresa: 5 });
+  const poucas = Array.from({ length: 4 }, () => linha(1));
+  assert.equal(C.avaliarAlertas(poucas, sem, 5).suficiente, false);
+  assert.deepEqual(C.avaliarAlertas(poucas, sem, 5).alertas, []);
+  const rows = [...Array.from({ length: 5 }, () => linha(1)), { ...linha(1), teste: true, escala: 5 }];
+  const av = C.avaliarAlertas(rows, sem, 5);
+  assert.equal(av.n, 5);
+  assert.deepEqual(av.alertas.map(a => [a.k, a.nivel]), [['disposicao', 'crítico'], ['escala', 'crítico'], ['comida', 'atenção']]);
+  assert.equal(C.avaliarAlertas(rows, '2026-W45', 5).suficiente, false, 'outra semana não conta');
+  const txt = C.textoAlerta(av, '');
+  assert.match(txt, /Disposição: média 1,00 \(crítico\)/);
+  assert.match(txt, /não contém comentários/);
+  assert.equal(/Front/.test(txt), false, 'sem área no e-mail');
+});
+
+test('lerConfig: e-mail de alerta válido ou padrão; LINK_PAINEL só https', () => {
+  assert.equal(C.lerConfig([]).ALERTA_EMAIL, 'jeanbrito@cajupar.com');
+  assert.equal(C.lerConfig([['ALERTA_EMAIL', 'invalido']]).ALERTA_EMAIL, 'jeanbrito@cajupar.com');
+  assert.equal(C.lerConfig([['LINK_PAINEL', 'javascript:x']]).LINK_PAINEL, '');
+  assert.equal(C.lerConfig([]).CANAL_GRAVE, 'https://wa.me/5561991798883');
+});

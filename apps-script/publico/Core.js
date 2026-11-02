@@ -308,6 +308,46 @@ function agregarMuralPulso(respostas, semanas, nmin) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Alerta semanal por e-mail                                           */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Regra documentada (mesmos cortes da v2):
+ *   média < 2,5  -> "crítico"
+ *   média < 3,2  -> "atenção"
+ * Avalia cada pergunta sozinha, só na semana indicada, sem registros de teste,
+ * sem recorte por área e só se n >= nmin. Nunca inclui comentários.
+ */
+var ALERTA_CRITICO = 2.5;
+var ALERTA_ATENCAO = 3.2;
+
+function avaliarAlertas(respostas, semana, nmin) {
+  var rows = respostas.filter(function (r) { return !r.teste && r.semana_iso === semana; });
+  if (rows.length < nmin) return { semana: semana, n: rows.length, suficiente: false, alertas: [] };
+  var alertas = [];
+  PERGUNTAS.forEach(function (q) {
+    var s = estatisticas(rows.map(function (r) { return r[q.k]; }));
+    if (s.n < nmin) return;
+    var nivel = s.media < ALERTA_CRITICO ? 'crítico' : s.media < ALERTA_ATENCAO ? 'atenção' : '';
+    if (nivel) alertas.push({ k: q.k, rotulo: q.rotulo, media: s.media, n: s.n, nivel: nivel, p12: s.p12 });
+  });
+  return { semana: semana, n: rows.length, suficiente: true, alertas: alertas };
+}
+
+function textoAlerta(av, linkPainel) {
+  var l = ['Pesquisa Pulso · CJ AN · semana ' + av.semana + ' (' + av.n + ' respostas)', ''];
+  av.alertas.forEach(function (a) {
+    l.push('- ' + a.rotulo + ': média ' + a.media.toFixed(2).replace('.', ',') +
+      ' (' + a.nivel + '), ' + Math.round(a.p12) + '% de notas 1–2, n = ' + a.n);
+  });
+  l.push('');
+  l.push('Regra: crítico abaixo de 2,5; atenção abaixo de 3,2. Cada pergunta é avaliada sozinha, só com 5 ou mais respostas na semana, sem respostas de teste.');
+  if (linkPainel) l.push('Painel interno: ' + linkPainel);
+  l.push('Este e-mail não contém comentários nem dados individuais.');
+  return l.join('\n');
+}
+
+/* ------------------------------------------------------------------ */
 /* Mural_Publicado → JSON público                                      */
 /* ------------------------------------------------------------------ */
 
@@ -373,10 +413,12 @@ function montarMural(itens, pulso, config) {
 
 var CONFIG_PADRAO = {
   NMIN: 5,
-  CANAL_GRAVE: 'https://wa.me/556194658006',
-  CANAL_GRAVE_ROTULO: '+55 61 9465-8006',
+  CANAL_GRAVE: 'https://wa.me/5561991798883',
+  CANAL_GRAVE_ROTULO: '+55 61 99179-8883',
   LINK_QUIZ: 'https://caju-quiz-gadelha.vercel.app/?loja=0683f5',
-  LINK_FLASH: 'https://hros.flashapp.com.br/authentication/login'
+  LINK_FLASH: 'https://hros.flashapp.com.br/authentication/login',
+  ALERTA_EMAIL: 'jeanbrito@cajupar.com',
+  LINK_PAINEL: ''
 };
 
 function lerConfig(linhas) {
@@ -392,6 +434,8 @@ function lerConfig(linhas) {
   ['CANAL_GRAVE', 'LINK_QUIZ', 'LINK_FLASH'].forEach(function (k) {
     if (!/^https:\/\//.test(c[k])) c[k] = CONFIG_PADRAO[k];
   });
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.ALERTA_EMAIL)) c.ALERTA_EMAIL = CONFIG_PADRAO.ALERTA_EMAIL;
+  if (!/^https:\/\//.test(c.LINK_PAINEL)) c.LINK_PAINEL = '';
   return c;
 }
 
@@ -588,7 +632,7 @@ if (typeof module !== 'undefined' && module.exports) {
     temNome: temNome, validarEnvio: validarEnvio, protegerCelula: protegerCelula,
     partesYmd: partesYmd, somarDias: somarDias, semanaIso: semanaIso, semanasJanela: semanasJanela,
     estatisticas: estatisticas, arredondarMedia: arredondarMedia, COLS_RESPOSTAS: COLS_RESPOSTAS, linhaParaResposta: linhaParaResposta,
-    agregarVisao: agregarVisao, agregarMuralPulso: agregarMuralPulso, COLS_MURAL: COLS_MURAL,
+    agregarVisao: agregarVisao, agregarMuralPulso: agregarMuralPulso, avaliarAlertas: avaliarAlertas, textoAlerta: textoAlerta, COLS_MURAL: COLS_MURAL,
     linhaParaMural: linhaParaMural, montarMural: montarMural, CONFIG_PADRAO: CONFIG_PADRAO,
     lerConfig: lerConfig, lerAllowlist: lerAllowlist, autorizado: autorizado, TEMAS_ACAO: TEMAS_ACAO,
     STATUS_ACAO: STATUS_ACAO, validarPublicacao: validarPublicacao, mesmoTexto: mesmoTexto, validarAcao: validarAcao,

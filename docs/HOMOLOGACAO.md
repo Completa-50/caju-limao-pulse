@@ -11,10 +11,11 @@ Os testes automatizados (`npm test` e `npm run e2e`) rodam contra uma simulaçã
 | 5 | Allowlist | Abra a URL do painel com uma conta Google fora da lista. | "Acesso negado", sem nenhum número ou texto da pesquisa. |
 | 6 | Painel | Abra com `jeanbrito@cajupar.com`. | "Conectado como jeanbrito@cajupar.com", com 5 cards. Uma área com menos de 5 respostas mostra "Dados insuficientes". |
 | 7 | Moderação | Teste publicar (tentando sem editar, depois editando), encaminhar ao RH, arquivar e virar ação. | Cada ação gera uma linha em `Log_Moderacao` com o e-mail de quem fez. |
-| 8 | Mural | Abra `mural.html`. | Só aparece o que foi publicado. Nada da fila, do RH ou de testes. |
+| 8 | Mural | Abra `dashboard.html`. | Só aparece o que foi publicado. Nada da fila, do RH ou de testes. |
 | 9 | XSS | Envie o comentário `<img src=x onerror=alert(1)>`. | Aparece como texto no painel e não dispara alerta. |
 | 10 | 390 px | Abra as três páginas num celular (ou no DevTools a 390 px). | Nada rola na horizontal. |
 | 11 | Rota pública | Abra `URL_PUBLICA?acao=mural` e `URL_PUBLICA?acao=respostas`. | A primeira traz só o conteúdo do Mural. A segunda responde `{"ok":false}`. |
 | 12 | Apoiar | Apoie uma sugestão e recarregue a página. | O contador sobe 1 e o botão continua "Apoiado". |
 | 13 | Histórico | Na planilha real (só leitura), rode `conferirHistoricoV2()`. | Comida e Empresa mostram `[CONFERE]`. |
+| 15 | Alerta | Com 5 ou mais respostas ruins na semana anterior, rode `verificarAlertas`. | Chega e-mail em jeanbrito@cajupar.com só com médias e n, sem comentários. |
 | 14 | GViz fechado | Depois do go-live, abra o endereço GViz numa janela anônima. | Login ou erro, sem nenhum dado. |
