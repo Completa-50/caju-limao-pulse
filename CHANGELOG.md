@@ -3,10 +3,10 @@
 ## v3 — em homologação (branch `v3`, ainda não publicada)
 
 ### Backup
-- **Pendente.** Cópia da planilha `Pesquisa pulso - Caju Limao` (id `1RJxUPC_bPwy6HogjoEzBi6YntZBChClz9hirctY6U_M`) ainda não feita. Registrar aqui o link da cópia antes de rodar `configurarPulsoV3()` na planilha real.
-  - Link da cópia: _(preencher)_
-  - Feita por / em: _(preencher)_
-
+- **Feita.** Cópia "BACKUP Pesquisa pulso - antes da v3 - 2026-11-02" da planilha original (id `1RJxUPC_bPwy6HogjoEzBi6YntZBChClz9hirctY6U_M`), compartilhamento restrito.
+  - Link da cópia: https://docs.google.com/spreadsheets/d/1epGE6AxqXpD277vA2BYuMC6xtTJH7C5Q305AqEG4jXc/edit
+  - Feita por / em: jdossantos.49@gmail.com em 02/11/2026
+  - Conferida em 04/11/2026: abas `Segunda-feira` e `Sexta-feira` presentes.
 ### O que muda
 - Formulário único semanal com 5 perguntas (textos do protótipo aprovado em 24/10/2026), área opcional e três campos abertos com até 600 caracteres.
 - Envio por `fetch` POST `text/plain`. "Recebido" só aparece com `{ok:true}` do servidor; em erro, a mensagem aparece e as respostas continuam na tela para reenviar. Fim do `no-cors`.
