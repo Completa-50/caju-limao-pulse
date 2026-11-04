@@ -24,7 +24,7 @@
 - Dona do script e das implantações: `jdossantos.49@gmail.com` (mesma dona da planilha).
 - Canal reservado: WhatsApp do RH do Boteco Caju Limão, +55 61 99179-8883 (`https://wa.me/5561991798883`).
 - `botecocajulimao@gmail.com` fora da allowlist: conta compartilhada pelo administrativo, o log perderia a autoria da moderação.
-- Data de virada: 03/11/2026. O `dashboard.html` é substituído pelo Mural.
+- Data de virada: 05/11/2026 (remarcada em 04/11; a anterior, 03/11, não foi cumprida). Condicionada à homologação aprovada. O `dashboard.html` é substituído pelo Mural.
 - Quiz e Flash só para colaboradores registrados da casa; freela não tem acesso. Textos do Mural ajustados.
 - Alerta semanal por e-mail para `jeanbrito@cajupar.com` (Config `ALERTA_EMAIL`): segundas, 9h, semana anterior, crítico < 2,5 e atenção < 3,2, só com n ≥ `NMIN`, sem comentários nem área.
 
